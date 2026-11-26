@@ -60,6 +60,12 @@ namespace Spells
     static constexpr uint32 FlyingShadowKickJump = 108943;
     static constexpr uint32 FeetOfFury = 108958;
     static constexpr uint32 FeetOfFuryDamage = 108957;
+
+    // The Challenger's Flames
+    static constexpr uint32 SeeQuestInvis19 = 108694;
+    static constexpr uint32 SeeQuestInvis16 = 105160;
+    static constexpr uint32 SeeQuestInvis17 = 105161;
+    static constexpr uint32 SeeQuestInvis18 = 105162;
 }
 
 namespace Quests
@@ -69,6 +75,15 @@ namespace Quests
     static constexpr uint32 TheSpiritAndBodyOfShenzinsu = 29775;
     static constexpr uint32 NewAllies = 29800;
 }
+
+namespace QuestObjectives
+{
+    // The Challenger's Flames
+    static constexpr uint32 ChallengerTorchLit = 255751;
+    static constexpr uint32 RedBrazierLit      = 255752;
+    static constexpr uint32 BlueBrazierLit     = 255753;
+    static constexpr uint32 VioletBrazierLit   = 255754;
+};
 
 namespace Creatures
 {
@@ -1638,6 +1653,24 @@ private:
     EventMap _events;
     CartData _data;
 };
+// Quest 29664 - The Challenger's Fires
+struct quest_the_challengers_fires : public QuestScript
+{
+public:
+    quest_the_challengers_fires() : QuestScript("quest_the_challengers_fires") { }
+
+    void OnQuestObjectiveChange(Player* player, Quest const* /*quest*/, QuestObjective const& objective, int32 /*oldAmount*/, int32 /*newAmount*/) override
+    {
+        if (objective.ID == QuestObjectives::ChallengerTorchLit)
+            player->RemoveAurasDueToSpell(Spells::SeeQuestInvis19);
+        else if (objective.ID == QuestObjectives::RedBrazierLit)
+            player->RemoveAurasDueToSpell(Spells::SeeQuestInvis16);
+        else if (objective.ID == QuestObjectives::BlueBrazierLit)
+            player->RemoveAurasDueToSpell(Spells::SeeQuestInvis17);
+        else if (objective.ID == QuestObjectives::VioletBrazierLit)
+            player->RemoveAurasDueToSpell(Spells::SeeQuestInvis18);
+    }
+};
 }
 
 void AddSC_zone_the_wandering_isle()
@@ -1679,4 +1712,5 @@ void AddSC_zone_the_wandering_isle()
     RegisterSpellScript(spell_flying_shadow_kick);
 
     RegisterCreatureAI(npc_delivery_cart);
+    new quest_the_challengers_fires();
 }
