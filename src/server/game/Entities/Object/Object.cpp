@@ -42,6 +42,7 @@
 #include "SpellAuraEffects.h"
 #include "SpellMgr.h"
 #include "SpellPackets.h"
+#include "SummonInfoArgs.h"
 #include "TemporarySummon.h"
 #include "Totem.h"
 #include "UpdateData.h"
@@ -1269,6 +1270,20 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
         delete summon;
         return nullptr;
     }
+
+    // Store special settings which have been extracted from spell effects/scripts
+    SummonInfoArgs args;
+    if (summoner)
+        args.SummonerGUID = summoner->GetGUID();
+    if (properties)
+        args.SummonPropertiesId = properties->ID;
+    if (duration > 0ms)
+        args.Duration = duration;
+    if (spellId)
+        args.SummonSpellId = spellId;
+
+    // Initialize the SummonInfo API which marks the creature as Summon
+    summon->InitializeSummonInfo(args);
 
     TransportBase* transport = summoner ? summoner->GetTransport() : nullptr;
     if (transport)
