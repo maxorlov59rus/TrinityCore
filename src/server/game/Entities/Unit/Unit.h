@@ -515,6 +515,7 @@ class TC_GAME_API ProcEventInfo
         Unit* GetActionTarget() const { return _actionTarget; }
 
         ProcFlagsInit GetTypeMask() const { return _typeMask; }
+        ProcExtraFlags GetExtraProcFlags() const { return _extraProcFlags; }
         ProcFlagsSpellType GetSpellTypeMask() const { return _spellTypeMask; }
         ProcFlagsSpellPhase GetSpellPhaseMask() const { return _spellPhaseMask; }
         ProcFlagsHit GetHitMask() const { return _hitMask; }
@@ -531,6 +532,7 @@ class TC_GAME_API ProcEventInfo
         Unit* const _actor;
         Unit* const _actionTarget;
         ProcFlagsInit _typeMask;
+        ProcExtraFlags _extraProcFlags;
         ProcFlagsSpellType _spellTypeMask;
         ProcFlagsSpellPhase _spellPhaseMask;
         ProcFlagsHit _hitMask;
