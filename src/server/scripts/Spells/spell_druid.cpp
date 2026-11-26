@@ -154,8 +154,12 @@ enum DruidSpells
     SPELL_DRUID_REJUVENATION                   = 774,
     SPELL_DRUID_REJUVENATION_GERMINATION       = 155777,
     SPELL_DRUID_REJUVENATION_T10_PROC          = 70691,
+    SPELL_DRUID_REFORESTATION                  = 392356,
+    SPELL_DRUID_REFORESTATION_AURA             = 392360,
     SPELL_DRUID_RESTORATION_T10_2P_BONUS       = 70658,
     SPELL_DRUID_SAVAGE_ROAR                    = 62071,
+    SPELL_DRUID_SOUL_OF_THE_FOREST             = 158478,
+    SPELL_DRUID_SWIFTMEND                      = 18562,
     SPELL_DRUID_SHOOTING_STARS                 = 202342,
     SPELL_DRUID_SHOOTING_STARS_DAMAGE          = 202497,
     SPELL_DRUID_SKULL_BASH_CHARGE              = 221514,
@@ -180,7 +184,9 @@ enum DruidSpells
     SPELL_DRUID_UMBRAL_INSPIRATION_TALENT      = 450418,
     SPELL_DRUID_UMBRAL_INSPIRATION_AURA        = 450419,
     SPELL_DRUID_URSOCS_FURY_SHIELD             = 372505,
+    SPELL_DRUID_VERDANT_INFUSION               = 392410,
     SPELL_DRUID_VERDANCY                       = 392325,
+    SPELL_DRUID_WILD_GROWTH                    = 48438,
     SPELL_DRUID_VERDANCY_HEAL                  = 392329,
     SPELL_DRUID_YSERAS_GIFT_HEAL_PARTY         = 145110,
     SPELL_DRUID_YSERAS_GIFT_HEAL_SELF          = 145109
@@ -2780,6 +2786,89 @@ class spell_dru_survival_instincts : public AuraScript
     }
 };
 
+// 18562 - Swiftmend
+// Ported from DragonCore. Two source bugs are fixed here: the consumed HoT is
+// removed from the target (not the caster) and the Reflorescence counter is a
+// per-cast stack on the aura instead of a function-static value.
+class spell_dru_swiftmend : public SpellScript
+{
+    static constexpr std::array<uint32, 5> HotAuras = {
+        SPELL_DRUID_REJUVENATION, SPELL_DRUID_REGROWTH, SPELL_DRUID_WILD_GROWTH,
+        SPELL_DRUID_LIFEBLOOM, SPELL_DRUID_LIFEBLOOM_OVERGROWTH
+    };
+    static constexpr std::array<uint32, 3> ConsumedAuras = {
+        SPELL_DRUID_REJUVENATION, SPELL_DRUID_REGROWTH, SPELL_DRUID_WILD_GROWTH
+    };
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({
+            SPELL_DRUID_REJUVENATION, SPELL_DRUID_REGROWTH, SPELL_DRUID_WILD_GROWTH,
+            SPELL_DRUID_LIFEBLOOM, SPELL_DRUID_LIFEBLOOM_OVERGROWTH,
+            SPELL_DRUID_SOUL_OF_THE_FOREST, SPELL_DRUID_SOUL_OF_THE_FOREST_AURA,
+            SPELL_DRUID_VERDANT_INFUSION, SPELL_DRUID_REFORESTATION,
+            SPELL_DRUID_REFORESTATION_AURA, SPELL_DRUID_INCARNATION,
+            SPELL_DRUID_INCARNATION_TREE_OF_LIFE
+        });
+    }
+
+    void HandleHeal(SpellEffIndex /*effIndex*/)
+    {
+        Unit* caster = GetCaster();
+        Unit* target = GetHitUnit();
+        if (!caster || !target)
+            return;
+
+        if (caster->HasAura(SPELL_DRUID_SOUL_OF_THE_FOREST))
+            caster->CastSpell(caster, SPELL_DRUID_SOUL_OF_THE_FOREST_AURA, TRIGGERED_IGNORE_CAST_IN_PROGRESS | TRIGGERED_DONT_REPORT_CAST_ERROR);
+
+        if (caster->HasAura(SPELL_DRUID_VERDANT_INFUSION))
+        {
+            for (uint32 spellId : HotAuras)
+                if (Aura* aura = target->GetAura(spellId))
+                    aura->SetDuration(aura->GetDuration() + 8000, true);
+        }
+        else
+        {
+            for (uint32 spellId : ConsumedAuras)
+            {
+                if (target->HasAura(spellId))
+                {
+                    target->RemoveAurasDueToSpell(spellId);
+                    break;
+                }
+            }
+        }
+
+        if (!caster->HasAura(SPELL_DRUID_REFORESTATION))
+            return;
+
+        caster->CastSpell(caster, SPELL_DRUID_REFORESTATION_AURA, TRIGGERED_IGNORE_CAST_IN_PROGRESS | TRIGGERED_DONT_REPORT_CAST_ERROR);
+        Aura* reforestation = caster->GetAura(SPELL_DRUID_REFORESTATION_AURA);
+        if (!reforestation)
+            return;
+
+        if (reforestation->GetStackAmount() < 3)
+        {
+            reforestation->SetStackAmount(reforestation->GetStackAmount() + 1);
+            return;
+        }
+
+        caster->CastSpell(caster, SPELL_DRUID_INCARNATION_TREE_OF_LIFE, CastSpellExtraArgs()
+            .SetTriggerFlags(TRIGGERED_FULL_MASK)
+            .SetTriggeringSpell(GetSpell()));
+        caster->RemoveAurasDueToSpell(SPELL_DRUID_REFORESTATION_AURA);
+
+        if (Aura* tree = caster->GetAura(SPELL_DRUID_INCARNATION))
+            tree->SetDuration(10000);
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_dru_swiftmend::HandleHeal, EFFECT_0, SPELL_EFFECT_HEAL);
+    }
+};
+
 // 40121 - Swift Flight Form (Passive)
 class spell_dru_swift_flight_passive : public AuraScript
 {
@@ -3598,6 +3687,7 @@ void AddSC_druid_spell_scripts()
     RegisterSpellScript(spell_dru_sudden_ambush);
     RegisterSpellScript(spell_dru_sunfire);
     RegisterSpellScript(spell_dru_survival_instincts);
+    RegisterSpellScript(spell_dru_swiftmend);
     RegisterSpellScript(spell_dru_swift_flight_passive);
     RegisterSpellScript(spell_dru_t3_6p_bonus);
     RegisterSpellScript(spell_dru_t3_8p_bonus);
