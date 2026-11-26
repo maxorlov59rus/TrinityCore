@@ -494,7 +494,12 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
                         {
                             if (player->CanTakeQuest(q, true))
                             {
-                                player->PlayerTalkClass->SendQuestGiverQuestDetails(q, me->GetGUID(), true, false);
+                                if (e.action.questOffer.playerMenu)
+                                {
+                                    player->SetSelfOfferQuest(int32(e.action.questOffer.questID));
+                                }
+
+                                player->PlayerTalkClass->SendQuestGiverQuestDetails(q, e.action.questOffer.playerMenu ? player->GetGUID() : me->GetGUID(), true, false);
                                 TC_LOG_DEBUG("scripts.ai", "SmartScript::ProcessAction:: SMART_ACTION_OFFER_QUEST: Player {} - offering quest {}", player->GetGUID(), e.action.questOffer.questID);
                             }
                         }

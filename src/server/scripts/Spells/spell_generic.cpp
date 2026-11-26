@@ -5818,6 +5818,35 @@ class spell_gen_switch_flight_style : public SpellScript
     }
 };
 
+// 76143 - Low Health
+class spell_gen_low_health : public AuraScript
+{
+    void OnApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    {
+        Unit* target = GetTarget();
+        if (Creature* creature = target->ToCreature())
+        {
+            creature->SetRegenerateHealth(false);
+            creature->SetHealth(target->CountPctFromMaxHealth(10));
+        }
+    }
+
+    void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    {
+        Unit* target = GetTarget();
+        if (Creature* creature = target->ToCreature())
+        {
+            creature->SetRegenerateHealth(true);
+        }
+    }
+
+    void Register() override
+    {
+        OnEffectApply += AuraEffectApplyFn(spell_gen_low_health::OnApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+        OnEffectRemove += AuraEffectRemoveFn(spell_gen_low_health::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+    }
+};
+
 void AddSC_generic_spell_scripts()
 {
     RegisterSpellScript(spell_gen_absorb0_hitlimit1);
@@ -6016,4 +6045,5 @@ void AddSC_generic_spell_scripts()
     RegisterSpellScript(spell_gen_abandon_vehicle);
     RegisterSpellScript(spell_gen_switch_flight_style);
     RegisterSpellScript(spell_gen_skyriding_impulse);
+    RegisterSpellScript(spell_gen_low_health);
 }

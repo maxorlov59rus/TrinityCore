@@ -32329,3 +32329,13 @@ void Player::AddMoveImpulse(Position direction)
     addImpulse.Direction = direction;
     SendMessageToSet(addImpulse.Write(), true);
 }
+
+void Player::SetSelfOfferQuest(int32 questId)
+{
+    SetUpdateFieldValue(m_values.ModifyValue(&Player::m_playerData).ModifyValue(&UF::PlayerData::OfferedScriptQuestID), questId);
+}
+
+int32 Player::GetSelfOfferQuest() const
+{
+    return m_playerData->OfferedScriptQuestID;
+}
