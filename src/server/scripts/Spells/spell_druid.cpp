@@ -142,6 +142,7 @@ enum DruidSpells
     SPELL_DRUID_ORBITAL_STRIKE_AREATRIGGER     = 390381,
     SPELL_DRUID_ORBITAL_STRIKE_DAMAGE          = 361237,
     SPELL_DRUID_POWER_OF_THE_ARCHDRUID         = 392302,
+    SPELL_DRUID_PREDATORY_SWIFTNESS_AURA       = 69369,
     SPELL_DRUID_PHOTOSYNTHESIS                 = 274902,
     SPELL_DRUID_PHOTOSYNTHESIS_EFFECT          = 274906,
     SPELL_DRUID_PROWL                          = 5215,
@@ -158,6 +159,7 @@ enum DruidSpells
     SPELL_DRUID_SHOOTING_STARS_DAMAGE          = 202497,
     SPELL_DRUID_SKULL_BASH_CHARGE              = 221514,
     SPELL_DRUID_SKULL_BASH_INTERRUPT           = 93985,
+    SPELL_DRUID_SOUL_OF_THE_FOREST_AURA        = 114108,
     SPELL_DRUID_SPRING_BLOSSOMS                = 207385,
     SPELL_DRUID_SPRING_BLOSSOMS_HEAL           = 207386,
     SPELL_DRUID_STAR_BURST                     = 356474,
@@ -2418,6 +2420,26 @@ private:
     bool _wasStealth = false;
 };
 
+// 8936 - Regrowth
+class spell_dru_regrowth : public SpellScript
+{
+    void HandleHealEffect(SpellEffIndex /*effIndex*/) const
+    {
+        Unit* caster = GetCaster();
+
+        if (caster->HasAura(SPELL_DRUID_SOUL_OF_THE_FOREST_AURA))
+            caster->RemoveAurasDueToSpell(SPELL_DRUID_SOUL_OF_THE_FOREST_AURA);
+
+        if (caster->HasAura(SPELL_DRUID_PREDATORY_SWIFTNESS_AURA))
+            caster->RemoveAurasDueToSpell(SPELL_DRUID_PREDATORY_SWIFTNESS_AURA);
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_dru_regrowth::HandleHealEffect, EFFECT_0, SPELL_EFFECT_HEAL);
+    }
+};
+
 // 1079 - Rip
 class spell_dru_rip : public AuraScript
 {
@@ -3526,6 +3548,7 @@ void AddSC_druid_spell_scripts()
     RegisterSpellScript(spell_dru_pulverize_thrash);
     RegisterSpellScript(spell_dru_pulverize_trigger_periodic);
     RegisterSpellScript(spell_dru_rake);
+    RegisterSpellScript(spell_dru_regrowth);
     RegisterSpellScript(spell_dru_rip);
     RegisterSpellAndAuraScriptPair(spell_dru_savage_roar, spell_dru_savage_roar_aura);
     RegisterSpellScript(spell_dru_shooting_stars);
