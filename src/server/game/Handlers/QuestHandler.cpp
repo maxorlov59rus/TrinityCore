@@ -112,12 +112,12 @@ void WorldSession::HandleQuestgiverAcceptQuestOpcode(WorldPackets::Quest::QuestG
         {
             if ((_player->GetPlayerSharingQuest().IsEmpty() && _player->GetPlayerSharingQuest() != packet.QuestGiverGUID) || !playerQuestObject->CanShareQuest(packet.QuestID))
             {
-                CLOSE_GOSSIP_CLEAR_SHARING_INFO();
+                CLOSE_GOSSIP_CLEAR_SHARING_INFO.reset();
                 return;
             }
             if (!_player->IsInSameRaidWith(playerQuestObject))
             {
-                CLOSE_GOSSIP_CLEAR_SHARING_INFO();
+                CLOSE_GOSSIP_CLEAR_SHARING_INFO.reset();
                 return;
             }
         }
@@ -125,7 +125,7 @@ void WorldSession::HandleQuestgiverAcceptQuestOpcode(WorldPackets::Quest::QuestG
         {
             if (_player->GetSelfOfferQuest() != packet.QuestID)
             {
-                CLOSE_GOSSIP_CLEAR_SHARING_INFO();
+                CLOSE_GOSSIP_CLEAR_SHARING_INFO.reset();
                 return;
             }
         }
