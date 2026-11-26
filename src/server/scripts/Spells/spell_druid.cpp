@@ -142,6 +142,7 @@ enum DruidSpells
     SPELL_DRUID_ORBITAL_STRIKE_AREATRIGGER     = 390381,
     SPELL_DRUID_ORBITAL_STRIKE_DAMAGE          = 361237,
     SPELL_DRUID_POWER_OF_THE_ARCHDRUID         = 392302,
+    SPELL_DRUID_PREDATORY_SWIFTNESS            = 16974,
     SPELL_DRUID_PREDATORY_SWIFTNESS_AURA       = 69369,
     SPELL_DRUID_PHOTOSYNTHESIS                 = 274902,
     SPELL_DRUID_PHOTOSYNTHESIS_EFFECT          = 274906,
@@ -2274,6 +2275,40 @@ class spell_dru_photosynthesis_effect : public AuraScript
     }
 };
 
+// Called by 22568 - Ferocious Bite
+class spell_dru_predatory_swiftness_trigger : public SpellScript
+{
+public:
+    explicit spell_dru_predatory_swiftness_trigger(uint32 spellId) : _spellId(spellId) { }
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ _spellId, SPELL_DRUID_PREDATORY_SWIFTNESS_AURA });
+    }
+
+    bool Load() override
+    {
+        return GetCaster()->HasAura(SPELL_DRUID_PREDATORY_SWIFTNESS)
+            && roll_chance(20 * GetCaster()->GetPower(POWER_COMBO_POINTS));
+    }
+
+    void HandlePredatorySwiftnessProc() const
+    {
+        GetCaster()->CastSpell(GetCaster(), SPELL_DRUID_PREDATORY_SWIFTNESS_AURA, CastSpellExtraArgsInit{
+            .TriggerFlags = TRIGGERED_IGNORE_CAST_IN_PROGRESS | TRIGGERED_DONT_REPORT_CAST_ERROR,
+            .TriggeringSpell = GetSpell()
+        });
+    }
+
+    void Register() override
+    {
+        AfterCast += SpellCastFn(spell_dru_predatory_swiftness_trigger::HandlePredatorySwiftnessProc);
+    }
+
+private:
+    uint32 _spellId;
+};
+
 // 5215 - Prowl
 class spell_dru_prowl : public spell_dru_base_transformer
 {
@@ -3541,6 +3576,9 @@ void AddSC_druid_spell_scripts()
     RegisterAreaTriggerAI(at_dru_orbital_strike);
     RegisterSpellScript(spell_dru_orbital_strike_damage);
     RegisterSpellScript(spell_dru_power_of_the_archdruid);
+    RegisterSpellScriptWithArgs(spell_dru_predatory_swiftness_trigger, "spell_dru_ferocious_bite_proc", 22568);
+    RegisterSpellScriptWithArgs(spell_dru_predatory_swiftness_trigger, "spell_dru_maim_proc", 22570);
+    RegisterSpellScriptWithArgs(spell_dru_predatory_swiftness_trigger, "spell_dru_rip_proc", 1079);
     RegisterSpellScript(spell_dru_photosynthesis);
     RegisterSpellScript(spell_dru_photosynthesis_effect);
     RegisterSpellScript(spell_dru_prowl);
