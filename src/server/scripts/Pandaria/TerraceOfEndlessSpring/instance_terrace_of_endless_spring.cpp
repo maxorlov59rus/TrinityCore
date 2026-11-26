@@ -57,7 +57,7 @@ public:
         {
             SetHeaders(DataHeader);
             SetBossNumber(EncounterCount);
-            LoadObjectData(creatureData, nullptr);
+            LoadObjectData(creatureData, {});
             LoadBossBoundaries(boundaries);
             LoadDungeonEncounterData(encounters);
 

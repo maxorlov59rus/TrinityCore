@@ -414,7 +414,7 @@ struct boss_elder_regail : public ProtectorsSharedAI
 
         Creature* protector = nullptr;
 
-        if (roll_chance_i(50))
+        if (roll_chance(50))
             protector = me;
         else
             protector = me->GetInstanceScript()->GetCreature(DATA_ELDER_ASANI);
