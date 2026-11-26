@@ -2107,6 +2107,76 @@ private:
     TaskScheduler _scheduler;
 };
 
+/*######
+## npc_allied_race_details
+######*/
+
+// ScriptName-driven embassy contact that opens the Allied Race details UI.
+// Race ids follow ChrRaces: 27..37, with 33 (Human) not yet available on retail.
+enum AlliedRaceDetailsSender
+{
+    SENDER_ALLIED_RACE_DETAILS = 9900
+};
+
+struct AlliedRaceDetailsEntry
+{
+    uint32 RaceId;
+    char const* Name;
+};
+
+static AlliedRaceDetailsEntry const alliedRaceDetailsEntries[] =
+{
+    { 27, "Nightborne" },
+    { 28, "Highmountain Tauren" },
+    { 29, "Void Elf" },
+    { 30, "Lightforged Draenei" },
+    { 31, "Zandalari Troll" },
+    { 32, "Kul Tiran Human" },
+    { 34, "Dark Iron Dwarf" },
+    { 35, "Vulpera" },
+    { 36, "Mag'har Orc" },
+    { 37, "Mechagnome" }
+};
+
+static uint32 FindAlliedRaceId(uint32 action)
+{
+    for (AlliedRaceDetailsEntry const& entry : alliedRaceDetailsEntries)
+        if (entry.RaceId == action)
+            return entry.RaceId;
+
+    return 0;
+}
+
+struct npc_allied_race_details : public ScriptedAI
+{
+    npc_allied_race_details(Creature* creature) : ScriptedAI(creature) { }
+
+    bool OnGossipHello(Player* player) override
+    {
+        ClearGossipMenuFor(player);
+
+        for (AlliedRaceDetailsEntry const& entry : alliedRaceDetailsEntries)
+            AddGossipItemFor(player, GossipOptionNpc::None, entry.Name, SENDER_ALLIED_RACE_DETAILS, entry.RaceId);
+
+        SendGossipMenuFor(player, DEFAULT_GOSSIP_MESSAGE, me);
+        return true;
+    }
+
+    bool OnGossipSelect(Player* player, uint32 /*menuId*/, uint32 gossipListId) override
+    {
+        if (player->PlayerTalkClass->GetGossipMenu().GetMenuItemSender(gossipListId) != SENDER_ALLIED_RACE_DETAILS)
+            return false;
+
+        uint32 raceId = FindAlliedRaceId(player->PlayerTalkClass->GetGossipMenu().GetMenuItemAction(gossipListId));
+        if (!raceId)
+            return false;
+
+        CloseGossipMenuFor(player);
+        player->GetSession()->SendOpenAlliedRaceDetails(me->GetGUID(), raceId);
+        return true;
+    }
+};
+
 void AddSC_npcs_special()
 {
     new npc_air_force_bots();
@@ -2129,4 +2199,5 @@ void AddSC_npcs_special()
     new npc_argent_squire_gruntling();
     new npc_bountiful_table();
     RegisterCreatureAI(npc_gen_void_zone);
+    RegisterCreatureAI(npc_allied_race_details);
 }
