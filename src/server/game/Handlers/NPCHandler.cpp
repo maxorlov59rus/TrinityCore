@@ -94,6 +94,14 @@ void WorldSession::SendShowMailBox(ObjectGuid guid)
     SendPacket(npcInteraction.Write());
 }
 
+void WorldSession::SendOpenAlliedRaceDetails(ObjectGuid const& guid, uint32 raceId)
+{
+    WorldPackets::NPC::OpenAlliedRaceDetails packet;
+    packet.Guid = guid;
+    packet.RaceId = raceId;
+    SendPacket(packet.Write());
+}
+
 void WorldSession::HandleTrainerListOpcode(WorldPackets::NPC::Hello& packet)
 {
     Creature* npc = GetPlayer()->GetNPCIfCanInteractWith(packet.Unit, UNIT_NPC_FLAG_TRAINER, UNIT_NPC_FLAG_2_NONE);

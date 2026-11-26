@@ -273,4 +273,12 @@ void SetPetSlot::Read()
     _worldPacket >> DestSlot;
     _worldPacket >> StableMaster;
 }
+
+WorldPacket const* OpenAlliedRaceDetails::Write()
+{
+    _worldPacket << Guid;
+    _worldPacket << uint32(RaceId);
+
+    return &_worldPacket;
+}
 }

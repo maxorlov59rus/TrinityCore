@@ -295,6 +295,17 @@ namespace WorldPackets
             uint32 PetNumber = 0;
             uint8 DestSlot = 0;
         };
+
+        class OpenAlliedRaceDetails final : public ServerPacket
+        {
+        public:
+            OpenAlliedRaceDetails() : ServerPacket(SMSG_ALLIED_RACE_DETAILS, 12) { }
+
+            WorldPacket const* Write() override;
+
+            ObjectGuid Guid;
+            uint32 RaceId = 0;
+        };
     }
 }
 

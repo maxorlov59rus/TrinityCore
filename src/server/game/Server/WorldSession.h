@@ -577,6 +577,7 @@ namespace WorldPackets
         class TrainerBuySpell;
         class RequestStabledPets;
         class SetPetSlot;
+        class OpenAlliedRaceDetails;
     }
 
     namespace Party
@@ -1088,6 +1089,7 @@ class TC_GAME_API WorldSession
         void SendSpiritResurrect();
         void SendBindPoint(Creature* npc);
         void SendOpenTransmogrifier(ObjectGuid const& guid);
+        void SendOpenAlliedRaceDetails(ObjectGuid const& guid, uint32 raceId);
 
         void SendTradeStatus(WorldPackets::Trade::TradeStatus& status);
         void SendUpdateTrade(bool trader_data = true);
