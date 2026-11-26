@@ -10296,7 +10296,7 @@ void Player::StoreItemInBank(Item* item)
             Bag* pBag = GetBagByPos(i);
             if (pBag)
             {
-                if (GetBagSlotFlags(i - BANK_SLOT_BAG_START).HasFlag(BagSlotFlags::PriorityJunk))
+                if (GetBankBagSlotFlags(i - BANK_SLOT_BAG_START).HasFlag(BagSlotFlags::PriorityJunk))
                     if (CanBankItem(i, NULL_SLOT, dest, item, false) == EQUIP_ERR_OK && !(dest.size() == 1 && dest[0].pos == item->GetPos()))
                     {
                         BankItem(dest, item, true);
@@ -10320,14 +10320,6 @@ void Player::StoreItemInBank(Item* item)
             }
         }
 
-        for (uint8 slot = BANK_SLOT_ITEM_END - 1; slot >= BANK_SLOT_ITEM_START; slot--)
-        {
-            if (CanBankItem(INVENTORY_SLOT_BAG_0, slot, dest, item, false) == EQUIP_ERR_OK && !(dest.size() == 1 && dest[0].pos == item->GetPos()))
-            {
-                BankItem(dest, item, true);
-                return;
-            }
-        }
     }
 
     //In case we don't have any place in other bags we store in all the remaining bags
