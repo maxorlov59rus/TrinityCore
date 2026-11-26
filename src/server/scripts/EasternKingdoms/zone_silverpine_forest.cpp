@@ -1799,7 +1799,7 @@ struct npc_silverpine_deathstalker_rane_yorick : public ScriptedAI
                     {
                         if (!_bloodfangGUID)
                         {
-                            if (Creature* bloodfang = me->FindNearestCreature(NPC_PACKLEADER_IVAR_BLOODFANG, 30.0f))
+                            if (Creature* bloodfang = me->FindNearestCreature(NPC_PACKLEADER_IVAR_BLOODFANG_EXSAN, 30.0f))
                             {
                                 if (bloodfang->GetOwnerGUID() == summoner->GetGUID())
                                     _bloodfangGUID = bloodfang->GetGUID();
@@ -1949,7 +1949,7 @@ struct npc_silverpine_armoire : public VehicleAI
                 _crowleyGUID = guid;
                 break;
 
-            case NPC_PACKLEADER_IVAR_BLOODFANG:
+            case NPC_PACKLEADER_IVAR_BLOODFANG_EXSAN:
                 _bloodfangGUID = guid;
                 break;
 
@@ -5329,7 +5329,6 @@ struct npc_silverpine_bloodfang_stalker : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        DoMeleeAttackIfReady();
     }
 
     void StartStalking(bool isRare = false)
@@ -5392,7 +5391,7 @@ struct npc_silverpine_caretaker_smithers : public ScriptedAI
             return;
 
         if (id == POINT_BEFORE_JUMPING)
-            me->GetMotionMaster()->MoveJump(SmithersResetPos[1], 7.5f, 7.5f, EVENT_JUMP, true);
+            me->GetMotionMaster()->MoveJump(EVENT_JUMP, SmithersResetPos[1], 7.5f, {}, {}, {}, true);
     }
 
     void JustEngagedWith(Unit* who) override
@@ -5437,7 +5436,6 @@ struct npc_silverpine_caretaker_smithers : public ScriptedAI
         if (!UpdateVictim())
             return;
 
-        DoMeleeAttackIfReady();
     }
 
 private:
@@ -5463,7 +5461,7 @@ enum NoWhereToRun
 {
     QUEST_NOWHERE_TO_RUN                        = 27195,
 
-    NPC_PACKLEADER_IVAR_BLOODFANG_ELEM_MINE     = 45236,
+    NPC_PACKLEADER_IVAR_BLOODFANG_EXSAN_ELEM_MINE     = 45236,
     NPC_VETERAN_FORSAKEN_TROOPER                = 45225,
 
     GAMEOBJECT_BOMB_WAGON                       = 205271,
@@ -5586,7 +5584,7 @@ struct npc_silverpine_master_forteski : public ScriptedAI
                     break;
 
                 case EVENT_NOWHERE_TO_RUN + 3:
-                    if (Creature* bloodfang = me->SummonCreature(NPC_PACKLEADER_IVAR_BLOODFANG_ELEM_MINE, BloodfangElemPos, TEMPSUMMON_MANUAL_DESPAWN))
+                    if (Creature* bloodfang = me->SummonCreature(NPC_PACKLEADER_IVAR_BLOODFANG_EXSAN_ELEM_MINE, BloodfangElemPos, TEMPSUMMON_MANUAL_DESPAWN))
                         _bloodfangGUID = bloodfang->GetGUID();
                     _events.ScheduleEvent(EVENT_NOWHERE_TO_RUN + 4, 1s + 200ms);
                     break;
@@ -5644,9 +5642,9 @@ struct npc_silverpine_master_forteski : public ScriptedAI
 
                         if (Group* group = player->GetGroup())
                         {
-                            for (GroupReference* itr = group->GetFirstMember(); itr != nullptr; itr = itr->next())
+                            for (GroupReference const& itr : group->GetMembers())
                             {
-                                Player* groupMember = itr->GetSource();
+                                Player* groupMember = itr.GetSource();
 
                                 if (groupMember && groupMember->IsInMap(player) && groupMember->GetQuestStatus(QUEST_NOWHERE_TO_RUN) == QUEST_STATUS_INCOMPLETE && groupMember->GetDistance(me) <= 75.f)
                                     groupMember->CompleteQuest(QUEST_NOWHERE_TO_RUN);
