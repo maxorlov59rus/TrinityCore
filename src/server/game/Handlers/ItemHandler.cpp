@@ -1721,7 +1721,7 @@ void WorldSession::HandleChangeBagSlotFlag(WorldPackets::Item::ChangeBagSlotFlag
 
 void WorldSession::HandleChangeBankBagSlotFlag(WorldPackets::Item::ChangeBankBagSlotFlag const& changeBankBagSlotFlag)
 {
-    if (changeBankBagSlotFlag.BagIndex >= _player->m_activePlayerData->BankBagSlotFlags.size())
+    if (changeBankBagSlotFlag.BagIndex >= _player->m_activePlayerData->CharacterBankTabSettings.size())
         return;
 
     if (changeBankBagSlotFlag.On)

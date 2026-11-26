@@ -1523,10 +1523,33 @@ class TC_GAME_API Player final : public Unit, public GridObject<Player>
         void SetBagSlotFlag(uint32 bagIndex, EnumFlag<BagSlotFlags> flags) { SetUpdateFieldFlagValue(m_values.ModifyValue(&Player::m_activePlayerData).ModifyValue(&UF::ActivePlayerData::BagSlotFlags, bagIndex), flags.AsUnderlyingType()); }
         void RemoveBagSlotFlag(uint32 bagIndex, EnumFlag<BagSlotFlags> flags) { RemoveUpdateFieldFlagValue(m_values.ModifyValue(&Player::m_activePlayerData).ModifyValue(&UF::ActivePlayerData::BagSlotFlags, bagIndex), flags.AsUnderlyingType()); }
         void ReplaceAllBagSlotFlags(uint32 bagIndex, EnumFlag<BagSlotFlags> flags) { SetUpdateFieldValue(m_values.ModifyValue(&Player::m_activePlayerData).ModifyValue(&UF::ActivePlayerData::BagSlotFlags, bagIndex), flags.AsUnderlyingType()); }
-        EnumFlag<BagSlotFlags> GetBankBagSlotFlags(uint32 bagIndex) const { return static_cast<BagSlotFlags>(m_activePlayerData->BankBagSlotFlags[bagIndex]); }
-        void SetBankBagSlotFlag(uint32 bagIndex, EnumFlag<BagSlotFlags> flags) { SetUpdateFieldFlagValue(m_values.ModifyValue(&Player::m_activePlayerData).ModifyValue(&UF::ActivePlayerData::BankBagSlotFlags, bagIndex), flags.AsUnderlyingType()); }
-        void RemoveBankBagSlotFlag(uint32 bagIndex, EnumFlag<BagSlotFlags> flags) { RemoveUpdateFieldFlagValue(m_values.ModifyValue(&Player::m_activePlayerData).ModifyValue(&UF::ActivePlayerData::BankBagSlotFlags, bagIndex), flags.AsUnderlyingType()); }
-        void ReplaceAllBankBagSlotFlags(uint32 bagIndex, EnumFlag<BagSlotFlags> flags) { SetUpdateFieldValue(m_values.ModifyValue(&Player::m_activePlayerData).ModifyValue(&UF::ActivePlayerData::BankBagSlotFlags, bagIndex), flags.AsUnderlyingType()); }
+        EnumFlag<BagSlotFlags> GetBankBagSlotFlags(uint32 bagIndex) const
+        {
+            if (bagIndex >= m_activePlayerData->CharacterBankTabSettings.size())
+                return BagSlotFlags::None;
+            return static_cast<BagSlotFlags>(*m_activePlayerData->CharacterBankTabSettings[bagIndex].DepositFlags);
+        }
+        void SetBankBagSlotFlag(uint32 bagIndex, EnumFlag<BagSlotFlags> flags)
+        {
+            if (bagIndex >= m_activePlayerData->CharacterBankTabSettings.size())
+                return;
+            auto setter = m_values.ModifyValue(&Player::m_activePlayerData).ModifyValue(&UF::ActivePlayerData::CharacterBankTabSettings, bagIndex);
+            SetUpdateFieldValue(setter.ModifyValue(&UF::BankTabSettings::DepositFlags), int32((GetBankBagSlotFlags(bagIndex) | flags).AsUnderlyingType()));
+        }
+        void RemoveBankBagSlotFlag(uint32 bagIndex, EnumFlag<BagSlotFlags> flags)
+        {
+            if (bagIndex >= m_activePlayerData->CharacterBankTabSettings.size())
+                return;
+            auto setter = m_values.ModifyValue(&Player::m_activePlayerData).ModifyValue(&UF::ActivePlayerData::CharacterBankTabSettings, bagIndex);
+            SetUpdateFieldValue(setter.ModifyValue(&UF::BankTabSettings::DepositFlags), int32((GetBankBagSlotFlags(bagIndex) & ~flags).AsUnderlyingType()));
+        }
+        void ReplaceAllBankBagSlotFlags(uint32 bagIndex, EnumFlag<BagSlotFlags> flags)
+        {
+            if (bagIndex >= m_activePlayerData->CharacterBankTabSettings.size())
+                return;
+            auto setter = m_values.ModifyValue(&Player::m_activePlayerData).ModifyValue(&UF::ActivePlayerData::CharacterBankTabSettings, bagIndex);
+            SetUpdateFieldValue(setter.ModifyValue(&UF::BankTabSettings::DepositFlags), int32(flags.AsUnderlyingType()));
+        }
         bool HasBankBagAnyPriorityFlag(uint8 bagSlot);
         bool HasBagAnyPriorityFlag(uint8 bagSlot);
         bool HasItemCount(uint32 item, uint32 count = 1, bool inBankAlso = false) const;

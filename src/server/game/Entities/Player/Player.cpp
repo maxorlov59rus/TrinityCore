@@ -9875,6 +9875,7 @@ void Player::UpdateInventorySlotCount()
         slotCount += alpacaSaddlebags->GetAmountAsInt();
 
     SetInventorySlotCount(slotCount);
+}
 
 bool Player::HasBagAnyPriorityFlag(uint8 bagSlot)
 {
