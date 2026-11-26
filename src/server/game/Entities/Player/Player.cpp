@@ -2304,8 +2304,22 @@ void Player::InitTalentForLevel()
     int32 talentTiers = DB2Manager::GetNumTalentsAtLevel(level, Classes(GetClass()));
     if (level < 15)
     {
-        // Remove all talent points
-        ResetTalents(true);
+        // Remove all talent points, but only when the character actually has talents left
+        // (e.g. after a level down). A character that never had any talents would otherwise
+        // run a full talent sweep plus two DB transactions on every single login and would
+        // try to send SMSG_TALENTS_INVOLUNTARILY_RESET, which is registered as STATUS_UNHANDLED
+        // in this core and gets dropped by WorldSession::SendPacket.
+        bool hasTalent = false;
+        for (uint8 spec = 0; spec < MAX_SPECIALIZATIONS && !hasTalent; ++spec)
+            for (PlayerTalentMap::const_iterator itr = GetTalentMap(spec)->begin(); itr != GetTalentMap(spec)->end(); ++itr)
+                if (itr->second != PLAYERSPELL_REMOVED)
+                {
+                    hasTalent = true;
+                    break;
+                }
+
+        if (hasTalent)
+            ResetTalents(true);
     }
     else
     {
