@@ -1551,10 +1551,13 @@ void WorldSession::HandleSortBankBags(WorldPackets::Item::SortBankBags& /*sortBa
     for (auto itr = std::begin(items); itr != std::end(items); ++itr)
         _player->StoreItemInBank(itr->second);
 
+    // This client version has no separate reagent-bank sort opcode; sort it together with the bank.
+    HandleSortReagentBankBags();
+
     SendPacket(WorldPackets::Item::BagCleanupFinished().Write());
 }
 
-void WorldSession::HandleSortReagentBankBags(WorldPackets::Item::SortReagentBankBags& /*sortReagentBankBags*/)
+void WorldSession::HandleSortReagentBankBags()
 {
     std::multimap<uint64, Item*> items;
     uint32 sortOrderHi;
@@ -1579,8 +1582,6 @@ void WorldSession::HandleSortReagentBankBags(WorldPackets::Item::SortReagentBank
 
     for (auto itr = std::begin(items); itr != std::end(items); ++itr)
         _player->StoreItemInReagentBank(itr->second);
-
-    SendPacket(WorldPackets::Item::BagCleanupFinished().Write());
 }
 
 void WorldSession::HandleRemoveNewItem(WorldPackets::Item::RemoveNewItem& removeNewItem)
