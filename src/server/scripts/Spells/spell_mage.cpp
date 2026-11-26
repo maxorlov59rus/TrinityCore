@@ -76,6 +76,7 @@ enum MageSpells
     SPELL_MAGE_FRENETIC_SPEED                    = 236060,
     SPELL_MAGE_FROST_NOVA                        = 122,
     SPELL_MAGE_GIRAFFE_FORM                      = 32816,
+    SPELL_MAGE_GLACIAL_SPIKE_DAMAGE              = 228600,
     SPELL_MAGE_HEAT_SHIMMER                      = 458964,
     SPELL_MAGE_HEATING_UP                        = 48107,
     SPELL_MAGE_HOT_STREAK                        = 48108,
@@ -1129,6 +1130,29 @@ public:
     }
 };
 
+// 199786 - Glacial Spike
+class spell_mage_glacial_spike : public SpellScript
+{
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_MAGE_GLACIAL_SPIKE_DAMAGE });
+    }
+
+    void HandleHitTarget(SpellEffIndex /*effIndex*/) const
+    {
+        GetCaster()->CastSpell(GetHitUnit(), SPELL_MAGE_GLACIAL_SPIKE_DAMAGE, CastSpellExtraArgsInit{
+            .TriggerFlags = TRIGGERED_IGNORE_CAST_IN_PROGRESS | TRIGGERED_DONT_REPORT_CAST_ERROR,
+            .TriggeringSpell = GetSpell()
+        });
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_mage_glacial_spike::HandleHitTarget, EFFECT_0, SPELL_EFFECT_DUMMY);
+    }
+};
+
+
 // 386737 - Hyper Impact
 class spell_mage_hyper_impact : public AuraScript
 {
@@ -2168,6 +2192,7 @@ void AddSC_mage_spell_scripts()
     RegisterSpellScript(spell_mage_flurry);
     RegisterSpellScript(spell_mage_flurry_damage);
     RegisterSpellScript(spell_mage_frostbolt);
+    RegisterSpellScript(spell_mage_glacial_spike);
     RegisterSpellScript(spell_mage_heat_shimmer);
     RegisterSpellScript(spell_mage_heat_shimmer_remove);
     RegisterSpellScript(spell_mage_hot_streak);
