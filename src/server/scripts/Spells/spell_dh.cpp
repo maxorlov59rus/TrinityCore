@@ -1405,6 +1405,26 @@ class spell_dh_eradicate : public SpellScript
     }
 };
 
+// 1225827/1279200 - Eradicate damage
+class spell_dh_eradicate_damage : public SpellScript
+{
+    PrepareSpellScript(spell_dh_eradicate_damage);
+
+    void FilterTargets(std::list<WorldObject*>& targets) const
+    {
+        Unit* caster = GetCaster();
+        targets.remove_if([caster](WorldObject* target)
+        {
+            return !caster->IsWithinDist(target, 25.0f) || !caster->HasInArc(float(M_PI) / 2.0f, target);
+        });
+    }
+
+    void Register() override
+    {
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_dh_eradicate_damage::FilterTargets, EFFECT_0, TARGET_UNIT_RECT_CASTER_TO_DEST_ENEMY);
+    }
+};
+
 // 1238488 - Moment of Craving (attached to 473728 - Void Ray)
 class spell_dh_eradicate_enabler : public AuraScript
 {
@@ -3565,6 +3585,7 @@ void AddSC_demon_hunter_spell_scripts()
     RegisterSpellScript(spell_dh_enduring_torment);
     RegisterSpellScript(spell_dh_enduring_torment_buff);
     RegisterSpellScript(spell_dh_eradicate);
+    RegisterSpellScript(spell_dh_eradicate_damage);
     RegisterSpellScript(spell_dh_eradicate_enabler);
     RegisterSpellScript(spell_dh_essence_break);
     RegisterSpellScript(spell_dh_eye_beam);
