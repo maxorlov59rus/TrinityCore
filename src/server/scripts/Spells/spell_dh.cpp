@@ -2321,6 +2321,68 @@ class spell_dh_moment_of_craving : public AuraScript
     }
 };
 
+// 206491 - Nemesis
+// When the marked target dies, the demon hunter gains the damage bonus for
+// that creature type. Ported from the modern AuraScript implementation of
+// RoleplayCore/BfaCore-Reforged (the older OnPlayerDeath variant is not
+// available in this tree).
+class spell_dh_nemesis : public AuraScript
+{
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({
+            SPELL_DH_NEMESIS_ABERRATIONS,
+            SPELL_DH_NEMESIS_BEASTS,
+            SPELL_DH_NEMESIS_CRITTERS,
+            SPELL_DH_NEMESIS_DEMONS,
+            SPELL_DH_NEMESIS_DRAGONKIN,
+            SPELL_DH_NEMESIS_ELEMENTALS,
+            SPELL_DH_NEMESIS_GIANTS,
+            SPELL_DH_NEMESIS_HUMANOIDS,
+            SPELL_DH_NEMESIS_MECHANICALS,
+            SPELL_DH_NEMESIS_UNDEAD
+        });
+    }
+
+    void HandleAfterRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) const
+    {
+        if (GetTargetApplication()->GetRemoveMode() != AURA_REMOVE_BY_DEATH)
+            return;
+
+        Unit* target = GetTarget();
+        Unit* caster = GetAura()->GetCaster();
+        if (!target || !caster)
+            return;
+
+        uint32 spellId = 0;
+        switch (target->GetCreatureType())
+        {
+            case CREATURE_TYPE_ABERRATION: spellId = SPELL_DH_NEMESIS_ABERRATIONS; break;
+            case CREATURE_TYPE_BEAST:      spellId = SPELL_DH_NEMESIS_BEASTS; break;
+            case CREATURE_TYPE_CRITTER:    spellId = SPELL_DH_NEMESIS_CRITTERS; break;
+            case CREATURE_TYPE_DEMON:      spellId = SPELL_DH_NEMESIS_DEMONS; break;
+            case CREATURE_TYPE_DRAGONKIN:  spellId = SPELL_DH_NEMESIS_DRAGONKIN; break;
+            case CREATURE_TYPE_ELEMENTAL:  spellId = SPELL_DH_NEMESIS_ELEMENTALS; break;
+            case CREATURE_TYPE_GIANT:      spellId = SPELL_DH_NEMESIS_GIANTS; break;
+            case CREATURE_TYPE_HUMANOID:   spellId = SPELL_DH_NEMESIS_HUMANOIDS; break;
+            case CREATURE_TYPE_MECHANICAL: spellId = SPELL_DH_NEMESIS_MECHANICALS; break;
+            case CREATURE_TYPE_UNDEAD:     spellId = SPELL_DH_NEMESIS_UNDEAD; break;
+            default: break;
+        }
+
+        if (!spellId)
+            return;
+
+        if (Aura* aur = caster->AddAura(spellId, caster))
+            aur->SetDuration(GetAura()->GetDuration());
+    }
+
+    void Register() override
+    {
+        AfterEffectRemove += AuraEffectRemoveFn(spell_dh_nemesis::HandleAfterRemove, EFFECT_0, SPELL_AURA_MOD_SCHOOL_MASK_DAMAGE_FROM_CASTER, AURA_EFFECT_HANDLE_REAL);
+    }
+};
+
 // 452414 - Monster Rising
 class spell_dh_monster_rising : public AuraScript
 {
@@ -3616,6 +3678,7 @@ void AddSC_demon_hunter_spell_scripts()
     RegisterSpellScript(spell_dh_know_your_enemy);
     RegisterSpellScript(spell_dh_last_resort);
     RegisterSpellScript(spell_dh_moment_of_craving);
+    RegisterSpellScript(spell_dh_nemesis);
     RegisterSpellScript(spell_dh_monster_rising);
     RegisterSpellScript(spell_dh_never_say_die);
     RegisterSpellScript(spell_dh_painbringer);
