@@ -9814,7 +9814,7 @@ void ObjectMgr::LoadGossipMenuItemsAddon()
 
         gMenuItemAddon.MenuID           = fields[0].GetUInt32();
         gMenuItemAddon.OrderIndex       = fields[1].GetUInt32();
-        gMenuItemAddon.DefaultAction    = GossipOptionDefaultAction(fields[1].GetUInt8());
+        gMenuItemAddon.DefaultAction    = GossipOptionDefaultAction(fields[2].GetUInt8());
 
         Trinity::IteratorPair<GossipMenuItemsContainer::iterator> bounds = Trinity::Containers::MapEqualRange(_gossipMenuItemsStore,  gMenuItemAddon.MenuID);
         auto itr = std::ranges::find(bounds, gMenuItemAddon.OrderIndex, [](std::pair<uint32 const, GossipMenuItems> const& itemPair)
