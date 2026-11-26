@@ -63,6 +63,10 @@ enum EvokerSpells
     SPELL_EVOKER_ESSENCE_BURST                  = 359618,
     SPELL_EVOKER_FIRESTORM_DAMAGE               = 369374,
     SPELL_EVOKER_ETERNITY_SURGE                 = 359073,
+    SPELL_EVOKER_ETERNITY_SURGE_DAMAGE          = 359077,
+    SPELL_EVOKER_ETERNITY_SURGE_LAUNCH          = 359090,
+    SPELL_EVOKER_ETERNITYS_SPAN                 = 375757,
+    SPELL_EVOKER_IMPROVED_ETERNITY_SURGE        = 382411,
     SPELL_EVOKER_FIRE_BREATH                    = 357208,
     SPELL_EVOKER_FIRE_BREATH_DAMAGE             = 357209,
     SPELL_EVOKER_GLIDE_KNOCKBACK                = 358736,
@@ -426,6 +430,83 @@ class spell_evo_fire_breath_damage : public SpellScript
     {
         CalcDamage += SpellCalcDamageFn(spell_evo_fire_breath_damage::AddBonusUpfrontDamage);
         OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_evo_fire_breath_damage::RemoveUnusedEffect, EFFECT_2, TARGET_UNIT_CONE_CASTER_TO_DEST_ENEMY);
+    }
+};
+
+// 359073 / 382411 - Eternity Surge
+// Ported from DragonCore. The empower stage count is passed to the damage
+// spell as a custom argument so its chain can be trimmed by Eternity's Span.
+class spell_evo_eternity_surge_base : public SpellScript
+{
+protected:
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({
+            SPELL_EVOKER_ETERNITY_SURGE_DAMAGE,
+            SPELL_EVOKER_ETERNITY_SURGE_LAUNCH,
+            SPELL_EVOKER_ETERNITYS_SPAN
+        });
+    }
+
+    void OnComplete(int32 completedStageCount) const
+    {
+        Unit* caster = GetCaster();
+        Unit* target = GetExplTargetUnit();
+        if (!caster || !target)
+            return;
+
+        int32 totalHits = completedStageCount;
+        if (caster->HasAura(SPELL_EVOKER_ETERNITYS_SPAN))
+            totalHits *= 2;
+
+        caster->CastSpell(caster, SPELL_EVOKER_ETERNITY_SURGE_LAUNCH, CastSpellExtraArgsInit{
+            .TriggerFlags = TRIGGERED_IGNORE_CAST_IN_PROGRESS | TRIGGERED_DONT_REPORT_CAST_ERROR,
+            .TriggeringSpell = GetSpell()
+        });
+
+        caster->CastSpell(target, SPELL_EVOKER_ETERNITY_SURGE_DAMAGE, CastSpellExtraArgsInit{
+            .TriggerFlags = TRIGGERED_IGNORE_CAST_IN_PROGRESS | TRIGGERED_DONT_REPORT_CAST_ERROR,
+            .TriggeringSpell = GetSpell(),
+            .CustomArg = totalHits
+        });
+    }
+};
+
+class spell_evo_eternity_surge : public spell_evo_eternity_surge_base
+{
+    void Register() override
+    {
+        OnEmpowerCompleted += SpellOnEmpowerStageCompletedFn(spell_evo_eternity_surge::OnComplete);
+    }
+};
+
+class spell_evo_improved_eternity_surge : public spell_evo_eternity_surge_base
+{
+    void Register() override
+    {
+        OnEmpowerCompleted += SpellOnEmpowerStageCompletedFn(spell_evo_improved_eternity_surge::OnComplete);
+    }
+};
+
+// 359077 - Eternity Surge damage
+class spell_evo_eternity_surge_damage : public SpellScript
+{
+    void FilterChainTargets(std::list<WorldObject*>& targets) const
+    {
+        int32 const* totalHits = std::any_cast<int32>(&GetSpell()->m_customArg);
+        if (!totalHits || *totalHits <= 1)
+        {
+            targets.clear();
+            return;
+        }
+
+        if ((int32)targets.size() > *totalHits - 1)
+            Trinity::Containers::RandomResize(targets, uint32(*totalHits - 1));
+    }
+
+    void Register() override
+    {
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_evo_eternity_surge_damage::FilterChainTargets, EFFECT_1, TARGET_UNIT_TARGET_ENEMY);
     }
 };
 
@@ -982,6 +1063,9 @@ void AddSC_evoker_spell_scripts()
     RegisterSpellScript(spell_evo_charged_blast);
     RegisterAreaTriggerAI(at_evo_emerald_blossom);
     RegisterSpellScript(spell_evo_emerald_blossom_heal);
+    RegisterSpellScript(spell_evo_eternity_surge);
+    RegisterSpellScript(spell_evo_improved_eternity_surge);
+    RegisterSpellScript(spell_evo_eternity_surge_damage);
     RegisterSpellScriptWithArgs(spell_evo_essence_burst_trigger, "spell_evo_azure_essence_burst", SPELL_EVOKER_AZURE_ESSENCE_BURST);
     RegisterSpellScriptWithArgs(spell_evo_essence_burst_trigger, "spell_evo_ruby_essence_burst", SPELL_EVOKER_RUBY_ESSENCE_BURST);
     RegisterAreaTriggerAI(at_evo_firestorm);
