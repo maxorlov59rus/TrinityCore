@@ -462,6 +462,7 @@ namespace WorldPackets
         struct ItemInstance;
         class RemoveNewItem;
         class ChangeBagSlotFlag;
+        class ChangeBankBagSlotFlag;
         class SetBackpackAutosortDisabled;
         class SetBackpackSellJunkDisabled;
         class SetBankAutosortDisabled;
