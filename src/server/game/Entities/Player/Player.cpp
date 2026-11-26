@@ -7531,7 +7531,7 @@ void Player::UpdateArea(uint32 newArea)
     if (oldArea != newArea)
     {
         UpdateCriteria(CriteriaType::EnterArea, newArea);
-        UpdateCriteria(CriteriaType::LeaveArea, oldArea);
+        UpdateCriteria(CriteriaType::LeaveArea, oldArea, newArea);
     }
 }
 
