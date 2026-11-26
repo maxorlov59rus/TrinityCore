@@ -1749,6 +1749,9 @@ class TC_GAME_API Player final : public Unit, public GridObject<Player>
         void SendQuestUpdate(uint32 questId, bool updateInteractions = true, bool updateGameObjectQuestGiverStatus = false);
         QuestGiverStatus GetQuestDialogStatus(Object const* questGiver) const;
         void SkipQuests(std::span<uint32 const> questIds); // removes quest from log, flags rewarded, but does not give any rewards to player
+
+        void AddPersonalSummon(ObjectGuid guid);
+        void DespawnAllPersonalSummons();
         void DespawnPersonalSummonsForQuest(uint32 questId);
 
         void SetDailyQuestStatus(uint32 quest_id);
@@ -3412,6 +3415,7 @@ class TC_GAME_API Player final : public Unit, public GridObject<Player>
         ObjectGuid _areaSpiritHealerGUID;
 
         bool _justPassedBarberChecks;
+        GuidVector _personalSummonGUIDs;
 
         // Spell cast request handling
     public:
