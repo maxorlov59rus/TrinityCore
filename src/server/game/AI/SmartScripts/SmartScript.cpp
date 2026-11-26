@@ -2452,10 +2452,18 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
                 if (Player* playerTarget = target->ToPlayer())
                 {
                     Conversation* conversation = Conversation::CreateConversation(e.action.conversation.id, playerTarget,
-                        *playerTarget, playerTarget->GetGUID(), nullptr);
+                        *playerTarget, playerTarget->GetGUID(), nullptr, false);
                     if (!conversation)
+                    {
                         TC_LOG_WARN("scripts.ai", "SmartScript::ProcessAction:: SMART_ACTION_CREATE_CONVERSATION: id {}, baseObject {}, target {} - failed to create conversation",
                             e.action.conversation.id, !baseObject ? "" : baseObject->GetName().c_str(), playerTarget->GetName());
+                        continue;
+                    }
+
+                    if (baseObject && e.action.conversation.baseObjectDynamicActorIdx > 0)
+                        conversation->AddActor(0, e.action.conversation.baseObjectDynamicActorIdx - 1, baseObject->GetGUID());
+
+                    conversation->Start();
                 }
             }
 
