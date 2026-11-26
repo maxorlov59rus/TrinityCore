@@ -1599,6 +1599,29 @@ class spell_dh_fel_flame_fortification : public AuraScript
     }
 };
 
+// 206966 - Fel Lance (Honor Talent)
+class spell_dh_fel_lance : public SpellScript
+{
+    PrepareSpellScript(spell_dh_fel_lance);
+
+    bool Validate(SpellInfo const* spellInfo) override
+    {
+        return ValidateSpellEffect({ { spellInfo->Id, EFFECT_0 } })
+            && spellInfo->GetEffect(EFFECT_0).IsEffect(SPELL_EFFECT_SCHOOL_DAMAGE);
+    }
+
+    void HandleDamage(SpellEffIndex /*effIndex*/)
+    {
+        if (Unit* target = GetHitUnit())
+            SetHitDamage(target->CountPctFromMaxHealth(GetEffectInfo(EFFECT_0).CalcValue(GetCaster())));
+    }
+
+    void Register() override
+    {
+        OnEffectLaunchTarget += SpellEffectFn(spell_dh_fel_lance::HandleDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+    }
+};
+
 // 195072 - Fel Rush
 class spell_dh_fel_rush : public SpellScript
 {
@@ -3549,6 +3572,7 @@ void AddSC_demon_hunter_spell_scripts()
     RegisterSpellScript(spell_dh_feast_of_souls_devourer);
     RegisterSpellScript(spell_dh_fel_devastation);
     RegisterSpellScript(spell_dh_fel_flame_fortification);
+    RegisterSpellScript(spell_dh_fel_lance);
     RegisterSpellScript(spell_dh_fel_rush);
     RegisterSpellScript(spell_dh_fel_rush_air);
     RegisterSpellScript(spell_dh_felblade);
