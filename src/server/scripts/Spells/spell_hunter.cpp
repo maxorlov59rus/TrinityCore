@@ -68,7 +68,7 @@ enum HunterSpells
     SPELL_HUNTER_EXPLOSIVE_SHOT_AREA                = 212680,
     SPELL_HUNTER_FREEZING_TRAP                      = 187651,
     SPELL_HUNTER_FREEZING_TRAP_TARGETING_SPELL      = 177419,
-    SPELL_HUNTER_FREEZING_TRAP_STUN                 = 3355
+    SPELL_HUNTER_FREEZING_TRAP_STUN                 = 3355,
     SPELL_HUNTER_FLARE_DISPEL                       = 132951,
     SPELL_HUNTER_FLARE_VISUAL                       = 214000,
     SPELL_HUNTER_FOCUSED_AIM                        = 378767,
