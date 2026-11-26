@@ -98,3 +98,18 @@ INSERT INTO `waypoint_path_node` (`PathId`, `NodeId`, `PositionX`, `PositionY`, 
 DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=26 AND `SourceGroup`=15286 AND `SourceEntry`=13377;
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `ConditionStringValue1`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES
 (26, 15286, 13377, 0, 0, 47, 0, 59926, 64, 0, '', 1, 0, 0, '', 'Apply Phase 15286 if Quest 59926 is not rewarded');
+DELETE FROM `creature_text` WHERE `CreatureID`=166782 AND `GroupID`=0 AND `ID`=0;
+INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Language`, `Probability`, `Emote`, `Duration`, `Sound`, `BroadcastTextId`, `TextRange`, `comment`) VALUES
+(166782, 0, 0, 'Thank the elements you survived.', 12, 0, 100, 3, 0, 297937, 0, 0, 'Trall to Player');
+
+DELETE FROM `creature_text_locale` WHERE `CreatureID`=166782 AND `GroupID`=0 AND `ID`=0 AND `Locale`='ruRU';
+INSERT INTO `creature_text_locale` (`CreatureID`, `GroupID`, `ID`, `Locale`, `Text`) VALUES
+(166782, 0, 0, 'ruRU', 'Хвала стихиям, ты в порядке!');
+
+DELETE FROM `creature_text` WHERE `CreatureID`=156626 AND `GroupID`=0 AND `ID`=0;
+INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Language`, `Probability`, `Emote`, `Duration`, `Sound`, `BroadcastTextId`, `TextRange`, `comment`) VALUES
+(156626, 0, 0, '$n! The sea was kind to you today.', 12, 0, 100, 3, 0, 297962, 0, 0, 'Леди Джайна Праудмур to Player');
+
+DELETE FROM `creature_text_locale` WHERE `CreatureID`=156626 AND `GroupID`=0 AND `ID`=0 AND `Locale`='ruRU';
+INSERT INTO `creature_text_locale` (`CreatureID`, `GroupID`, `ID`, `Locale`, `Text`) VALUES
+(156626, 0, 0, 'ruRU', 'Тебе повезло! Море тебя пощадило.');
