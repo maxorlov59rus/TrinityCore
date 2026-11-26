@@ -6191,3 +6191,4 @@ void AddSC_generic_spell_scripts()
     RegisterSpellScript(spell_gen_switch_flight_style);
     RegisterSpellScript(spell_gen_skyriding_impulse);
     RegisterSpellScript(spell_gen_low_health);
+}
