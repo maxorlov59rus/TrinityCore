@@ -681,6 +681,21 @@ class spell_monk_soothing_mist : public SpellScript
         return ValidateSpellInfo({ SPELL_MONK_SOOTHING_MIST, SPELL_MONK_PEER_INTO_PEACE });
     }
 
+    // 116670 Vivify and 124682 Enveloping Mist inherit the target of an
+    // active Soothing Mist channel (DragonCore OnPrecast adaptation).
+    void OnPrecast() override
+    {
+        Unit* caster = GetCaster();
+        if (!caster)
+            return;
+
+        Spell* soothingMist = caster->FindCurrentSpellBySpellId(SPELL_MONK_SOOTHING_MIST);
+        if (!soothingMist || soothingMist->getState() != SPELL_STATE_CHANNELING)
+            return;
+
+        GetSpell()->InitExplicitTargets(soothingMist->m_targets);
+    }
+
     int32 CalcCastTime(int32 castTime) override
     {
         Unit* caster = GetCaster();
