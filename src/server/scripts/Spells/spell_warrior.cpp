@@ -131,6 +131,8 @@ enum WarriorSpells
     SPELL_WARRIOR_WHIRLWIND_CLEAVE_AURA             = 85739,
     SPELL_WARRIOR_WHIRLWIND_ENERGIZE                = 280715,
     SPELL_WARRIOR_WRATH_AND_FURY                    = 392936,
+    SPELL_WARRIOR_FERVOR_OF_BATTLE                  = 202316,
+    SPELL_WARRIOR_SLAM                              = 1464
 };
 
 enum WarriorMisc
@@ -917,6 +919,44 @@ class spell_warr_execute_refund_rage : public SpellScript
         OnCalculateResistAbsorb += SpellOnResistAbsorbCalculateFn(spell_warr_execute_refund_rage::DetermineKillStatus);
     }
 };
+
+// 202316 - Fervor of Battle
+class spell_warr_fervor_of_battle : public SpellScript
+{
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_WARRIOR_SLAM, SPELL_WARRIOR_FERVOR_OF_BATTLE });
+    }
+
+    void HandleSlam(SpellEffIndex /*effIndex*/)
+    {
+        Unit* caster = GetCaster();
+        if (!caster || !caster->HasAura(SPELL_WARRIOR_FERVOR_OF_BATTLE))
+            return;
+
+        SpellInfo const* fervorInfo = sSpellMgr->GetSpellInfo(SPELL_WARRIOR_FERVOR_OF_BATTLE, GetCastDifficulty());
+        int32 fervorBP0 = fervorInfo->GetEffect(EFFECT_0).CalcValue(caster);
+
+        int64 const targetsHit = GetUnitTargetCountForEffect(EFFECT_0);
+        if (targetsHit < fervorBP0)
+            return;
+
+        Unit* target = GetExplTargetUnit();
+        caster->CastSpell(target, SPELL_WARRIOR_SLAM, CastSpellExtraArgsInit{
+            .TriggerFlags = TRIGGERED_IGNORE_CAST_IN_PROGRESS
+                          | TRIGGERED_DONT_REPORT_CAST_ERROR
+                          | TRIGGERED_IGNORE_POWER_COST
+                          | TRIGGERED_CAST_DIRECTLY,
+            .TriggeringSpell = GetSpell()
+        });
+    }
+
+    void Register() override
+    {
+        OnEffectHit += SpellEffectFn(spell_warr_fervor_of_battle::HandleSlam, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+    }
+};
+
 
 // 383848 - Frenzied Enrage (attached to 184362 - Enrage)
 class spell_warr_frenzied_enrage : public SpellScript
@@ -2477,5 +2517,6 @@ void AddSC_warrior_spell_scripts()
     RegisterSpellScript(spell_warr_vicious_contempt);
     RegisterSpellScript(spell_warr_victorious_state);
     RegisterSpellScript(spell_warr_victory_rush);
+    RegisterSpellScript(spell_warr_fervor_of_battle);
     RegisterSpellScript(spell_warr_warriors_wrath);
 }
