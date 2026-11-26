@@ -49,7 +49,7 @@
 #include "Spell.h"
 #include "SpellAuraEffects.h"
 #include "SpellMgr.h"
-#include "SummonInfo.h"
+#include "SummonInfo/SummonInfo.h"
 #include "TemporarySummon.h"
 #include "Vehicle.h"
 #include "World.h"

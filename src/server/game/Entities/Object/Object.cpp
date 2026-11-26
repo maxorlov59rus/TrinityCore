@@ -42,7 +42,7 @@
 #include "SpellAuraEffects.h"
 #include "SpellMgr.h"
 #include "SpellPackets.h"
-#include "SummonInfoArgs.h"
+#include "SummonInfo/SummonInfoArgs.h"
 #include "TemporarySummon.h"
 #include "Totem.h"
 #include "UpdateData.h"
