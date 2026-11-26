@@ -2992,7 +2992,7 @@ void Spell::TargetInfo::DoDamageAndTriggers(Spell* spell)
         {
             if (Unit* unitCaster = spell->m_caster->ToUnit())
             {
-                unitCaster->AtTargetAttacked(unit, spell->m_spellInfo->HasInitialAggro());
+                unitCaster->AtTargetAttacked(unit, spell->m_spellInfo->HasInitialAggro(MissCondition));
 
                 if (spell->m_spellInfo->HasAttribute(SPELL_ATTR6_TAPS_IMMEDIATELY))
                     if (Creature* targetCreature = unit->ToCreature())
@@ -5684,10 +5684,18 @@ void Spell::HandleThreatSpells()
     // since 2.0.1 threat from positive effects also is distributed among all targets, so the overall caused threat is at most the defined bonus
     threat /= m_UniqueTargetInfo.size();
 
+    bool isMissed = false;
+    for (auto ihit = m_UniqueTargetInfo.begin(); ihit != m_UniqueTargetInfo.end() && !isMissed; ++ihit)
+        isMissed = ihit->MissCondition != SPELL_MISS_NONE;
+
+    if (m_spellInfo->HasAttribute(SPELL_ATTR1_THREAT_ONLY_ON_MISS) && !isMissed)
+        return;
+
+
     for (auto ihit = m_UniqueTargetInfo.begin(); ihit != m_UniqueTargetInfo.end(); ++ihit)
     {
         float threatToAdd = threat;
-        if (ihit->MissCondition != SPELL_MISS_NONE)
+        if (ihit->MissCondition != SPELL_MISS_NONE && !m_spellInfo->HasAttribute(SPELL_ATTR1_THREAT_ONLY_ON_MISS))
             threatToAdd = 0.0f;
 
         Unit* target = ObjectAccessor::GetUnit(*unitCaster, ihit->TargetGUID);
@@ -8544,7 +8552,7 @@ void Spell::PreprocessSpellLaunch(TargetInfo& targetInfo)
         targetInfo.MissCondition = SPELL_MISS_IMMUNE;
 
     // This will only cause combat - the target will engage once the projectile hits (in Spell::TargetInfo::PreprocessTarget)
-    if (m_originalCaster && targetInfo.MissCondition != SPELL_MISS_EVADE && !m_originalCaster->IsFriendlyTo(targetUnit) && (!m_spellInfo->IsPositive() || m_spellInfo->HasEffect(SPELL_EFFECT_DISPEL)) && (m_spellInfo->HasInitialAggro() || targetUnit->IsEngaged()))
+    if (m_originalCaster && targetInfo.MissCondition != SPELL_MISS_EVADE && !m_originalCaster->IsFriendlyTo(targetUnit) && (!m_spellInfo->IsPositive() || m_spellInfo->HasEffect(SPELL_EFFECT_DISPEL)) && (m_spellInfo->HasInitialAggro(targetInfo.MissCondition) || targetUnit->IsEngaged()))
         m_originalCaster->SetInCombatWith(targetUnit, true);
 
     Unit* unit = nullptr;

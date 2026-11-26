@@ -1933,8 +1933,11 @@ bool SpellInfo::IsEmpowerSpell() const
     return !EmpowerStageThresholds.empty();
 }
 
-bool SpellInfo::HasInitialAggro() const
+bool SpellInfo::HasInitialAggro(SpellMissInfo missCondition /*= SPELL_MISS_NONE*/) const
 {
+    if (HasAttribute(SPELL_ATTR1_THREAT_ONLY_ON_MISS))
+        return missCondition != SPELL_MISS_NONE;
+
     return !(HasAttribute(SPELL_ATTR1_NO_THREAT) || HasAttribute(SPELL_ATTR2_NO_INITIAL_THREAT) || HasAttribute(SPELL_ATTR4_NO_HARMFUL_THREAT));
 }
 
@@ -2046,15 +2049,27 @@ bool SpellInfo::IsUpdatingTemporaryAuraValuesBySpellMod() const
     return false;
 }
 
-bool SpellInfo::CanPierceImmuneAura(SpellInfo const* auraSpellInfo) const
+bool SpellInfo::CanPierceImmuneAura(SpellInfo const* auraSpellInfo, uint32 schoolMask /*= 0*/) const
 {
+    // aura can't be pierced
+    if (!auraSpellInfo || auraSpellInfo->HasAttribute(SPELL_ATTR0_NO_IMMUNITIES))
+        return false;
+
+    if (HasAttribute(SPELL_ATTR0_NO_IMMUNITIES) || (schoolMask && HasAttribute(SPELL_ATTR2_NO_SCHOOL_IMMUNITIES)))
+        return true;
+
+    // these spells (Cyclone for example) can pierce all...
+    if (HasAttribute(SPELL_ATTR1_IMMUNITY_TO_HOSTILE_AND_FRIENDLY_EFFECTS) &&
+        auraSpellInfo->Mechanic != MECHANIC_IMMUNE_SHIELD &&
+        auraSpellInfo->Mechanic != MECHANIC_BANISH)
+        return true;
+
     // Dispels other auras on immunity, check if this spell makes the unit immune to aura
     if (HasAttribute(SPELL_ATTR1_IMMUNITY_PURGES_EFFECT) && CanSpellProvideImmunityAgainstAura(auraSpellInfo))
         return true;
 
     return false;
 }
-
 bool SpellInfo::CanDispelAura(SpellInfo const* auraSpellInfo) const
 {
     // These auras (like Divine Shield) can't be dispelled

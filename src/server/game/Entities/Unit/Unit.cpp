@@ -1725,6 +1725,11 @@ void Unit::HandleEmoteCommand(Emote emoteId, Player* target /*=nullptr*/, Trinit
                 armor = std::floor(AddPct(armor, -aurEff->GetAmount()));
         }
 
+        // armor is normal school partial resist, level base resist is elemental resist,
+        // not affected by SPELL_ATTR5_NO_PARTIAL_RESISTS
+        if (spellInfo && spellInfo->HasAttribute(SPELL_ATTR5_NO_PARTIAL_RESISTS))
+            armor = 0.0f;
+
         // Apply Player CR_ARMOR_PENETRATION rating and buffs from stances\specializations etc.
         if (attacker->GetTypeId() == TYPEID_PLAYER)
         {
@@ -7902,7 +7907,7 @@ bool Unit::IsImmunedToSpell(SpellInfo const* spellInfo, uint32 effectMask, World
             if (!(spellInfo->NegativeEffects.to_ulong() & effectMask) && !(immuneSpellInfo && immuneSpellInfo->HasAttribute(SPELL_ATTR1_IMMUNITY_TO_HOSTILE_AND_FRIENDLY_EFFECTS)))
                 continue;
 
-            if (spellInfo->CanPierceImmuneAura(immuneSpellInfo))
+            if (spellInfo->CanPierceImmuneAura(immuneSpellInfo, schoolMask))
                 continue;
 
             schoolImmunityMask |= auraSchoolImmunityMask;
@@ -7994,7 +7999,7 @@ bool Unit::IsImmunedToDamage(WorldObject const* /*caster*/, SpellInfo const* spe
                 if (spellInfo->IsPositive() && !(immuneAuraInfo && immuneAuraInfo->HasAttribute(SPELL_ATTR1_IMMUNITY_TO_HOSTILE_AND_FRIENDLY_EFFECTS)))
                     continue;
 
-                if (immuneAuraInfo && spellInfo->CanPierceImmuneAura(immuneAuraInfo))
+                if (immuneAuraInfo && spellInfo->CanPierceImmuneAura(immuneAuraInfo, spellInfo->GetSchoolMask()))
                     continue;
 
                 schoolImmunityMask |= immunitySchoolMask;

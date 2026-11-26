@@ -787,12 +787,12 @@ void AuraEffect::GetApplicationList(Container& applicationContainer) const
     }
 }
 
-SpellEffectValue AuraEffect::CalculateAmount(Unit* caster)
+SpellEffectValue AuraEffect::CalculateAmount(Unit* caster, Unit* calcTarget /*= nullptr*/)
 {
     Unit* unitOwner = GetBase()->GetOwner()->ToUnit();
 
     // default amount calculation
-    SpellEffectValue amount = GetSpellEffectInfo().CalcValue(caster, &m_baseAmount, unitOwner, nullptr, GetBase()->GetCastItemId(), GetBase()->GetCastItemLevel());
+    SpellEffectValue amount = GetSpellEffectInfo().CalcValue(caster, &m_baseAmount, calcTarget ? calcTarget : unitOwner, nullptr, GetBase()->GetCastItemId(), GetBase()->GetCastItemLevel());
 
     // custom amount calculations go here
     switch (GetAuraType())
@@ -1162,6 +1162,9 @@ void AuraEffect::HandleEffect(AuraApplication * aurApp, uint8 mode, bool apply, 
 
     // real aura apply/remove, handle modifier
     if (mode & AURA_EFFECT_HANDLE_CHANGE_AMOUNT_MASK)
+        // Recalculate for spells whose effect points scale with the target level.
+        if (m_spellInfo->HasAttribute(SPELL_ATTR8_USE_TARGETS_LEVEL_FOR_SPELL_SCALING))
+            SetAmount(CalculateAmount(GetCaster(), aurApp->GetTarget()));
         ApplySpellMod(aurApp->GetTarget(), apply, triggeredBy);
 
     // call scripts helping/replacing effect handlers

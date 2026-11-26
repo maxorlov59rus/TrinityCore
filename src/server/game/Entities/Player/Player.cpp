@@ -1218,6 +1218,15 @@ bool Player::TeleportTo(TeleportLocation const& teleportLocation, TeleportToOpti
 
     MapEntry const* mEntry = sMapStore.LookupEntry(teleportLocation.Location.GetMapId());
 
+    RemoveAppliedAuras([mEntry](AuraApplication const* aurApp) -> bool
+    {
+        bool isEnteringInstance = mEntry->IsDungeon() || mEntry->IsRaid();
+        bool removeOutsideInstance = aurApp->GetBase()->GetSpellInfo()->HasAttribute(SPELL_ATTR8_REMOVE_OUTSIDE_DUNGEONS_AND_RAIDS);
+
+        return removeOutsideInstance && !isEnteringInstance;
+    });
+
+
     // don't let enter battlegrounds without assigned battleground id (for example through areatrigger)...
     // don't let gm level > 1 either
     if (!InBattleground() && mEntry->IsBattlegroundOrArena())
@@ -27185,7 +27194,7 @@ bool Player::CanUseBattlegroundObject(GameObject* gameobject) const
 
     // BUG: sometimes when player clicks on flag in AB - client won't send gameobject_use, only gameobject_report_use packet
     // Note: Mount, stealth and invisibility will be removed when used
-    return (!isTotalImmune() &&                            // Damage immune
+    return (!IsImmuneToAllSchool() &&                      // Damage immune
             !hasRecentlyDroppedFlagDebuff &&               // Still has recently held flag debuff
             IsAlive());                                    // Alive
 }
@@ -27222,7 +27231,7 @@ int64 Player::GetBarberShopCost(Trinity::IteratorPair<UF::ChrCustomizationChoice
     return cost;
 }
 
-bool Player::isTotalImmune() const
+bool Player::IsImmuneToAllSchool() const
 {
     AuraEffectList const& immune = GetAuraEffectsByType(SPELL_AURA_SCHOOL_IMMUNITY);
 
