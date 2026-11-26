@@ -115,6 +115,8 @@ class TC_GAME_API AreaTrigger final : public WorldObject, public GridObject<Area
 
         bool IsNeverVisibleFor(WorldObject const* seer, bool allowServersideObjects) const override;
 
+        void DoAction(AreaTriggerActions action, Unit* triggeringUnit, AreaTriggerActionParam const& param);
+
         Position const& GetStationaryPosition() const override { return _stationaryPosition; }
         void RelocateStationaryPosition(Position const& pos) { _stationaryPosition.Relocate(pos); }
         void PlaySpellVisual(uint32 spellVisualId) const;
