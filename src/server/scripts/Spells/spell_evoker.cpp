@@ -37,6 +37,7 @@
 
 enum EvokerSpells
 {
+    SPELL_EVOKER_ALTERED_FORM                    = 97709,
     SPELL_EVOKER_AZURE_ESSENCE_BURST            = 375721,
     SPELL_EVOKER_BLAST_FURNACE                  = 375510,
     SPELL_EVOKER_BLESSING_OF_THE_BRONZE_DK      = 381732,
@@ -80,8 +81,10 @@ enum EvokerSpells
     SPELL_EVOKER_SCOURING_FLAME                 = 378438,
     SPELL_EVOKER_SNAPFIRE                       = 370818,
     SPELL_EVOKER_SOAR_RACIAL                    = 369536,
+    SPELL_EVOKER_SOAR_AURA                      = 430747,
     SPELL_EVOKER_VERDANT_EMBRACE_HEAL           = 361195,
-    SPELL_EVOKER_VERDANT_EMBRACE_JUMP           = 373514
+    SPELL_EVOKER_VERDANT_EMBRACE_JUMP           = 373514,
+    SPELL_EVOKER_VISAGE_REGEN_AURA              = 372014
 };
 
 enum EvokerSpellLabels
@@ -92,6 +95,12 @@ enum EvokerSpellLabels
 enum EvokerSpellVisuals
 {
     SPELL_VISUAL_KIT_EVOKER_VERDANT_EMBRACE_JUMP    = 152557,
+};
+
+enum EvokerVisageDisplayIds
+{
+    DISPLAYID_VISAGE_NORMAL     = 104597,
+    DISPLAYID_VISAGE_ALTERED    = 108590
 };
 
 // 362969 - Azure Strike (blue)
@@ -861,6 +870,107 @@ class spell_evo_verdant_embrace_trigger_heal : public SpellScript
     }
 };
 
+// 369536 - Soar
+class spell_evo_soar : public SpellScript
+{
+    void OnPrecast() override
+    {
+        Unit* caster = GetCaster();
+        if (caster->GetDisplayId() == DISPLAYID_VISAGE_NORMAL && !caster->HasAura(SPELL_EVOKER_ALTERED_FORM))
+        {
+            caster->RemoveAurasDueToSpell(SPELL_EVOKER_VISAGE_REGEN_AURA);
+            caster->CastSpell(caster, SPELL_EVOKER_ALTERED_FORM, TRIGGERED_FULL_MASK);
+        }
+    }
+
+    void HandleOnCast() const
+    {
+        Unit* caster = GetCaster();
+        caster->GetMotionMaster()->MoveJump(EVENT_JUMP, Position(caster->GetPositionX(), caster->GetPositionY(), caster->GetPositionZ() + 30.0f), 20.0f, {}, 10.0f);
+    }
+
+    void HandleAfterCast() const
+    {
+        GetCaster()->CastSpell(GetCaster(), SPELL_EVOKER_SOAR_AURA, TRIGGERED_FULL_MASK);
+    }
+
+    void Register() override
+    {
+        OnCast += SpellCastFn(spell_evo_soar::HandleOnCast);
+        AfterCast += SpellCastFn(spell_evo_soar::HandleAfterCast);
+    }
+};
+
+// 430747 - Soar aura
+class spell_evo_soar_aura : public AuraScript
+{
+    void OnApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    {
+        _wasInFlight = GetTarget()->IsFlying() || GetTarget()->IsFalling();
+    }
+
+    void ForcePeriodic(AuraEffect const* /*auraEff*/, bool& isPeriodic, int32& amplitude)
+    {
+        isPeriodic = true;
+        amplitude = 200;
+    }
+
+    void UpdateState(AuraEffect const* /*aurEff*/)
+    {
+        Unit* target = GetTarget();
+
+        bool inFlight = target->IsFlying() || target->IsFalling();
+        bool isOnGround = !inFlight && !target->IsInWater();
+
+        if (_wasInFlight && isOnGround)
+        {
+            target->RemoveAurasDueToSpell(SPELL_EVOKER_SOAR_AURA);
+            target->RemoveAurasDueToSpell(SPELL_EVOKER_SOAR_RACIAL);
+            return;
+        }
+
+        _wasInFlight = inFlight;
+    }
+
+    void Register() override
+    {
+        OnEffectApply += AuraEffectApplyFn(spell_evo_soar_aura::OnApply, EFFECT_0, SPELL_AURA_MOUNTED, AURA_EFFECT_HANDLE_REAL);
+        DoEffectCalcPeriodic += AuraEffectCalcPeriodicFn(spell_evo_soar_aura::ForcePeriodic, EFFECT_0, SPELL_AURA_MOUNTED);
+        OnEffectPeriodic += AuraEffectPeriodicFn(spell_evo_soar_aura::UpdateState, EFFECT_0, SPELL_AURA_MOUNTED);
+    }
+
+private:
+    bool _wasInFlight = false;
+};
+
+// 351239 - Visage (Racial)
+class spell_evo_visage : public SpellScript
+{
+    void HandleTransform(SpellEffIndex /*effIndex*/) const
+    {
+        Unit* caster = GetCaster();
+
+        uint32 targetDisplayId = caster->HasAura(SPELL_EVOKER_VISAGE_REGEN_AURA)
+            ? DISPLAYID_VISAGE_ALTERED
+            : DISPLAYID_VISAGE_NORMAL;
+
+        caster->RemoveAurasDueToSpell(SPELL_EVOKER_VISAGE_REGEN_AURA);
+        caster->RemoveAurasDueToSpell(SPELL_EVOKER_ALTERED_FORM);
+
+        uint32 targetSpell = targetDisplayId == DISPLAYID_VISAGE_ALTERED
+            ? SPELL_EVOKER_ALTERED_FORM
+            : SPELL_EVOKER_VISAGE_REGEN_AURA;
+
+        caster->CastSpell(caster, targetSpell, TRIGGERED_IGNORE_CAST_IN_PROGRESS | TRIGGERED_DONT_REPORT_CAST_ERROR);
+        caster->SetDisplayId(targetDisplayId, false);
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_evo_visage::HandleTransform, EFFECT_0, SPELL_EFFECT_REMOVE_AURA_BY_SPELL_LABEL);
+    }
+};
+
 void AddSC_evoker_spell_scripts()
 {
     RegisterSpellScript(spell_evo_azure_strike);
@@ -889,6 +999,9 @@ void AddSC_evoker_spell_scripts()
     RegisterSpellScript(spell_evo_scouring_flame);
     RegisterSpellScript(spell_evo_snapfire);
     RegisterSpellScript(spell_evo_snapfire_bonus_damage);
+    RegisterSpellScript(spell_evo_soar);
+    RegisterSpellScript(spell_evo_soar_aura);
     RegisterSpellScript(spell_evo_verdant_embrace);
     RegisterSpellScript(spell_evo_verdant_embrace_trigger_heal);
+    RegisterSpellScript(spell_evo_visage);
 }
