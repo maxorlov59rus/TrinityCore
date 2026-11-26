@@ -356,6 +356,7 @@ class TC_GAME_API AuraEffect
         void HandleCosmeticMounted(AuraApplication const* aurApp, uint8 mode, bool apply) const;
         void HandleModRequiredMountCapabilityFlags(AuraApplication const* aurApp, uint8 mode, bool apply) const;
         void HandleSuppressItemPassiveEffectBySpellLabel(AuraApplication const* aurApp, uint8 mode, bool apply) const;
+        void HandleSelfieCamera(AuraApplication const* aurApp, uint8 mode, bool apply) const;
 
         // aura effect periodic tick handlers
         void HandlePeriodicTriggerSpellAuraTick(Unit* target, Unit* caster) const;

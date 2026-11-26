@@ -566,7 +566,7 @@ enum AuraType : uint32
     SPELL_AURA_479                                          = 479,  // NYI
     SPELL_AURA_480                                          = 480,  // Unused in 12.1.5
     SPELL_AURA_481                                          = 481,  // Unused in 12.1.5
-    SPELL_AURA_482                                          = 482,  // NYI
+    SPELL_AURA_SELFIE_CAMERA                                = 482,
     SPELL_AURA_SUPPRESS_TRANSFORMS                          = 483,  // NYI
     SPELL_AURA_ALLOW_INTERRUPT_SPELL                        = 484,
     SPELL_AURA_MOD_MOVEMENT_FORCE_MAGNITUDE                 = 485,
