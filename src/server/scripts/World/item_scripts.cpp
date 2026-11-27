@@ -227,6 +227,25 @@ class item_generic_limit_chance_above_60 : public ItemScript
         }
 };
 
+/*#####
+# item_talisman_of_flame_ascendancy
+#####*/
+
+class item_talisman_of_flame_ascendancy : public ItemScript
+{
+public:
+    item_talisman_of_flame_ascendancy() : ItemScript("talisman_of_flame_ascendancy") { }
+
+    bool OnUse(Player* player, Item* /*item*/, SpellCastTargets const& /*targets*/, ObjectGuid /*castId*/) override
+    {
+        if (player->GetQuestStatus(25310) == QUEST_STATUS_INCOMPLETE && player->GetAreaId() == 4998)
+            if (player->FindNearestCreature(139643, 25.0f, true))
+                player->CastSpell(player, 75554, true);
+
+        return true;
+    }
+};
+
 void AddSC_item_scripts()
 {
     new item_only_for_flight();
@@ -236,4 +255,5 @@ void AddSC_item_scripts()
     new item_petrov_cluster_bombs();
     new item_captured_frog();
     new item_generic_limit_chance_above_60();
+    new item_talisman_of_flame_ascendancy();
 }
