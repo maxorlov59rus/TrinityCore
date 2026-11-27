@@ -29,6 +29,7 @@ void AddSC_instance_sepulcher_of_the_first_ones();
 void AddSC_boss_globgrog();
 void AddSC_boss_doctor_ickus();
 void AddSC_boss_domina_venomblade();
+void AddSC_boss_margrave_stradama();
 void AddSC_instance_plaguefall();
 
 // The name of this function should match:
@@ -50,5 +51,6 @@ void AddShadowlandsScripts()
     AddSC_boss_globgrog();
     AddSC_boss_doctor_ickus();
     AddSC_boss_domina_venomblade();
+    AddSC_boss_margrave_stradama();
     AddSC_instance_plaguefall();
 }
