@@ -17,10 +17,12 @@
 
 // This is where scripts' loading functions should be declared:
 void AddSC_northshire_brawl();          // Custom/Northshire/npc_blackrock_battle_worg.cpp
+void AddSC_spell_monkey_wisdom_text();  // Custom/Pandaria/spell_monkey_wisdom_text.cpp
 
 // The name of this function should match:
 // void Add${NameOfDirectory}Scripts()
 void AddCustomScripts()
 {
     AddSC_northshire_brawl();
+    AddSC_spell_monkey_wisdom_text();
 }
