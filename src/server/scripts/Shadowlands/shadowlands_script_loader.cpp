@@ -27,6 +27,7 @@ void AddSC_instance_sepulcher_of_the_first_ones();
 
 // Plaguefall
 void AddSC_boss_globgrog();
+void AddSC_boss_doctor_ickus();
 void AddSC_instance_plaguefall();
 
 // The name of this function should match:
@@ -46,5 +47,6 @@ void AddShadowlandsScripts()
 
     // Plaguefall
     AddSC_boss_globgrog();
+    AddSC_boss_doctor_ickus();
     AddSC_instance_plaguefall();
 }
