@@ -33,7 +33,15 @@ enum UnderrotDataTypes
     DATA_CRAGMAW_THE_INFESTED,
     DATA_UNBOUND_ABOMINATION,
 
-    DATA_CRAGMAW_CRAWG_EATING
+    DATA_CRAGMAW_CRAWG_EATING,
+
+    // Additional Underrot event data. Keep the encounter indices above unchanged.
+    DATA_FACELESS_CORRUPTOR_1,
+    DATA_FACELESS_CORRUPTOR_2,
+    DATA_EVENT_HERZEL,
+    DATA_BOSS_HERZEL,
+    DATA_PYRAMID_WEB,
+    DATA_PYRAMID_DOOR
 };
 
 enum UnderrotCreatureIds
@@ -42,11 +50,17 @@ enum UnderrotCreatureIds
     BOSS_ELDER_LEAXA            = 131318,
     BOSS_SPORECALLER_ZANCHA     = 131383,
     BOSS_CRAGMAW_THE_INFESTED   = 131817,
-    BOSS_UNBOUND_ABOMINATION    = 133007
+    BOSS_UNBOUND_ABOMINATION    = 133007,
+
+    NPC_TITAN_KEEPER_HEZREL     = 134419,
+    NPC_BLOOD_VISAGE            = 137103,
+    NPC_ROTTING_SPORE           = 137458,
+    NPC_FACELESS_CORRUPTOR      = 138281
 };
 
 enum UnderrotGameObjectIds
 {
+    GO_PYRAMID_WEB                                      = 296384,
     GO_PYRAMID_DOOR_UNBOUND_ABOMINATION_ENTRANCE        = 296385,
     GO_WALL_DOOR_SHORTCUT_ENTRANCE                      = 295356
 };
