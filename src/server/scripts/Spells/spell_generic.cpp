@@ -5662,6 +5662,44 @@ struct at_gen_spatial_rift : AreaTriggerAI
     }
 };
 
+// 256893 - Light's Judgement (Lightforged Draenei racial)
+class spell_light_judgement : public SpellScript
+{
+    void HandleDamage(SpellEffIndex /*effIndex*/)
+    {
+        if (Unit* caster = GetCaster())
+            SetHitDamage(int32(6.25f * caster->m_unitData->AttackPower));
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_light_judgement::HandleDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+    }
+};
+
+// 255652 - Light's Reckoning (Lightforged Draenei racial)
+class aura_light_reckoning : public AuraScript
+{
+    bool Validate(SpellInfo const* spellInfo) override
+    {
+        return ValidateSpellEffect({ { spellInfo->Id, EFFECT_0 } })
+            && ValidateSpellInfo({ spellInfo->GetEffect(EFFECT_0).TriggerSpell });
+    }
+
+    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) const
+    {
+        if (GetTargetApplication()->GetRemoveMode() != AURA_REMOVE_BY_DEATH)
+            return;
+
+        GetTarget()->CastSpell(GetTarget(), GetSpellInfo()->GetEffect(EFFECT_0).TriggerSpell, true);
+    }
+
+    void Register() override
+    {
+        AfterEffectRemove += AuraEffectRemoveFn(aura_light_reckoning::HandleRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+    }
+};
+
 class spell_gen_force_phase_update : public AuraScript
 {
     void AfterApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) const
@@ -6351,6 +6389,8 @@ void AddSC_generic_spell_scripts()
     RegisterSpellScript(spell_gen_saddlechute);
     RegisterSpellScript(spell_gen_spatial_rift);
     RegisterAreaTriggerAI(at_gen_spatial_rift);
+    RegisterSpellScript(spell_light_judgement);
+    RegisterSpellScript(aura_light_reckoning);
     RegisterSpellScript(spell_gen_force_phase_update);
     RegisterSpellScriptWithArgs(spell_gen_no_npc_damage_below_override, "spell_gen_no_npc_damage_below_override_70", 70.0f);
     RegisterSpellScript(spell_gen_abandon_vehicle);
