@@ -5662,6 +5662,28 @@ struct at_gen_spatial_rift : AreaTriggerAI
     }
 };
 
+// 260364 - Arcane Pulse (Nightborne racial)
+class spell_arcane_pulse : public SpellScript
+{
+    void HandleDamage(SpellEffIndex /*effIndex*/)
+    {
+        Unit* caster = GetCaster();
+        if (!caster)
+            return;
+
+        float damage = caster->GetTotalAttackPowerValue(BASE_ATTACK) * 2.0f;
+        if (damage == 0.0f)
+            damage = float(caster->SpellBaseDamageBonusDone(SPELL_SCHOOL_MASK_ALL)) * 0.75f;
+
+        SetHitDamage(int32(damage));
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_arcane_pulse::HandleDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+    }
+};
+
 // 256893 - Light's Judgement (Lightforged Draenei racial)
 class spell_light_judgement : public SpellScript
 {
@@ -6389,6 +6411,7 @@ void AddSC_generic_spell_scripts()
     RegisterSpellScript(spell_gen_saddlechute);
     RegisterSpellScript(spell_gen_spatial_rift);
     RegisterAreaTriggerAI(at_gen_spatial_rift);
+    RegisterSpellScript(spell_arcane_pulse);
     RegisterSpellScript(spell_light_judgement);
     RegisterSpellScript(aura_light_reckoning);
     RegisterSpellScript(spell_gen_force_phase_update);
