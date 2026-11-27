@@ -65,6 +65,13 @@ void Scenario::CompleteStep(ScenarioStepEntry const* step)
     if (step->IsBonusObjective())
         return;
 
+    // Do not switch to an invalid step once every required step is complete
+    if (IsComplete())
+    {
+        CompleteScenario();
+        return;
+    }
+
     ScenarioStepEntry const* newStep = nullptr;
     for (auto const& _step : _data->Steps)
     {
@@ -78,11 +85,13 @@ void Scenario::CompleteStep(ScenarioStepEntry const* step)
             newStep = _step.second;
     }
 
-    SetStep(newStep);
-    if (IsComplete())
-        CompleteScenario();
-    else
+    if (!newStep)
+    {
         TC_LOG_ERROR("scenario", "Scenario::CompleteStep: Scenario (id: {}, step: {}) was completed, but could not determine new step, or validate scenario completion.", step->ScenarioID, step->ID);
+        return;
+    }
+
+    SetStep(newStep);
 }
 
 void Scenario::CompleteScenario()
@@ -253,6 +262,7 @@ void Scenario::BuildScenarioStateFor(Player const* player, WorldPackets::Scenari
 {
     scenarioState->ScenarioGUID = _guid;
     scenarioState->ScenarioID = _data->Entry->ID;
+    scenarioState->DifficultyID = _map->GetDifficultyID();
     if (ScenarioStepEntry const* step = GetStep())
         scenarioState->CurrentStep = step->ID;
     scenarioState->CriteriaProgress = GetCriteriasProgressFor(player);
