@@ -5989,6 +5989,24 @@ class spell_gen_low_health : public AuraScript
     }
 };
 
+// 348162 - Wandering Ancient
+class spell_wandering_ancient : public AuraScript
+{
+    PrepareAuraScript(spell_wandering_ancient);
+
+    void RandomizeDisplay(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    {
+        uint32 displayIds[4] = { 100463, 100464, 100465, 100466 };
+        Trinity::Containers::RandomShuffle(displayIds);
+        GetTarget()->Mount(displayIds[0]);
+    }
+
+    void Register() override
+    {
+        AfterEffectApply += AuraEffectApplyFn(spell_wandering_ancient::RandomizeDisplay, EFFECT_0, SPELL_AURA_MOUNTED, AURA_EFFECT_HANDLE_REAL);
+    }
+};
+
 void AddSC_generic_spell_scripts()
 {
     RegisterSpellScript(spell_gen_absorb0_hitlimit1);
@@ -6191,4 +6209,5 @@ void AddSC_generic_spell_scripts()
     RegisterSpellScript(spell_gen_switch_flight_style);
     RegisterSpellScript(spell_gen_skyriding_impulse);
     RegisterSpellScript(spell_gen_low_health);
+    RegisterSpellScript(spell_wandering_ancient);
 }
