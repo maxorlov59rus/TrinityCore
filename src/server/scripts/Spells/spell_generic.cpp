@@ -6032,6 +6032,110 @@ class spell_deepholm_kill_all_constructs : public SpellScript
     }
 };
 
+// 312916/313015 - Mechagnome Emergency
+class spell_class_mecagnomo_emergency : public AuraScript
+{
+    PrepareAuraScript(spell_class_mecagnomo_emergency);
+
+    static constexpr uint32 SPELL_MECAGNOMO_EMERGENCY_HEAL = 313010;
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_MECAGNOMO_EMERGENCY_HEAL });
+    }
+
+    bool CheckProc(ProcEventInfo& /*eventInfo*/)
+    {
+        if (Unit* caster = GetCaster())
+            caster->ModifyAuraState(AURA_STATE_WOUNDED_20_PERCENT, false);
+
+        return true;
+    }
+
+    void HandleProc(AuraEffect* aurEff, ProcEventInfo& /*eventInfo*/)
+    {
+        PreventDefaultAction();
+
+        Unit* caster = GetCaster();
+        if (!caster)
+            return;
+
+        uint32 triggerOnHealth = caster->CountPctFromMaxHealth(aurEff->GetAmount());
+        uint32 currentHealth = caster->GetHealth();
+        if (currentHealth > triggerOnHealth && (currentHealth - caster->CountPctFromMaxHealth(25)) <= triggerOnHealth)
+            caster->CastSpell(caster, SPELL_MECAGNOMO_EMERGENCY_HEAL, true);
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_class_mecagnomo_emergency::CheckProc);
+        OnEffectProc += AuraEffectProcFn(spell_class_mecagnomo_emergency::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+    }
+};
+
+// 313015 - Mechagnome Emergency Aura
+class spell_class_mecagnomo_emergency2 : public AuraScript
+{
+    PrepareAuraScript(spell_class_mecagnomo_emergency2);
+
+    static constexpr uint32 SPELL_MECAGNOMO_EMERGENCY_HEAL = 313010;
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_MECAGNOMO_EMERGENCY_HEAL });
+    }
+
+    void PreventApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    {
+        Unit* caster = GetCaster();
+        if (!caster || !caster->HasAura(SPELL_MECAGNOMO_EMERGENCY_HEAL))
+            PreventDefaultAction();
+    }
+
+    void Register() override
+    {
+        OnEffectApply += AuraEffectApplyFn(spell_class_mecagnomo_emergency2::PreventApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+    }
+};
+
+// 313010 - Mechagnome Emergency Heal
+class spell_class_mecagnomo_emergency3 : public SpellScript
+{
+    PrepareSpellScript(spell_class_mecagnomo_emergency3);
+
+    static constexpr uint32 SPELL_MECAGNOMO_EMERGENCY_AURA = 313015;
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_MECAGNOMO_EMERGENCY_AURA });
+    }
+
+    void CheckAura(SpellEffIndex /*effIndex*/)
+    {
+        Unit* caster = GetCaster();
+        if (!caster || !caster->HasAura(SPELL_MECAGNOMO_EMERGENCY_AURA))
+            PreventHitDefaultEffect(EFFECT_1);
+    }
+
+    void HandleHeal(SpellEffIndex effIndex)
+    {
+        Unit* caster = GetCaster();
+        if (!caster)
+            return;
+
+        int32 heal = caster->SpellHealingBonusTaken(caster, GetSpellInfo(), caster->CountPctFromMaxHealth(25), HEAL);
+        SetHitHeal(heal);
+        caster->CastSpell(caster, SPELL_MECAGNOMO_EMERGENCY_AURA, true);
+        PreventHitDefaultEffect(effIndex);
+    }
+
+    void Register() override
+    {
+        OnEffectLaunch += SpellEffectFn(spell_class_mecagnomo_emergency3::CheckAura, EFFECT_1, SPELL_EFFECT_TRIGGER_SPELL);
+        OnEffectHitTarget += SpellEffectFn(spell_class_mecagnomo_emergency3::HandleHeal, EFFECT_0, SPELL_EFFECT_HEAL_PCT);
+    }
+};
+
 void AddSC_generic_spell_scripts()
 {
     RegisterSpellScript(spell_gen_absorb0_hitlimit1);
@@ -6236,4 +6340,7 @@ void AddSC_generic_spell_scripts()
     RegisterSpellScript(spell_gen_low_health);
     RegisterSpellScript(spell_wandering_ancient);
     RegisterSpellScript(spell_deepholm_kill_all_constructs);
+    RegisterSpellScript(spell_class_mecagnomo_emergency);
+    RegisterSpellScript(spell_class_mecagnomo_emergency2);
+    RegisterSpellScript(spell_class_mecagnomo_emergency3);
 }
