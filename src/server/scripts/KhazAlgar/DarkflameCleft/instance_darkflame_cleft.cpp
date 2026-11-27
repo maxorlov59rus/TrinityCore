@@ -27,10 +27,10 @@ BossBoundaryData const boundaries =
 
 static constexpr ObjectData creatureData[] =
 {
-    { DATA_OL_WAXBEARD,     BOSS_OL_WAXBEARD     },
-    { DATA_BLAZIKON,        BOSS_BLAZIKON        },
-    { DATA_THE_CANDLE_KING, BOSS_THE_CANDLE_KING },
-    { DATA_THE_DARKNESS,    BOSS_THE_DARKNESS    }
+    { BOSS_OL_WAXBEARD,     DATA_OL_WAXBEARD     },
+    { BOSS_BLAZIKON,        DATA_BLAZIKON        },
+    { BOSS_THE_CANDLE_KING, DATA_THE_CANDLE_KING },
+    { BOSS_THE_DARKNESS,    DATA_THE_DARKNESS    }
 };
 
 static constexpr DungeonEncounterData const encounters[] =
