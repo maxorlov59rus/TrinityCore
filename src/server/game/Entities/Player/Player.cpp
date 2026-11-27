@@ -15377,7 +15377,14 @@ bool Player::CanSelectQuestPackageItem(QuestPackageItemEntry const* questPackage
         case QUEST_PACKAGE_FILTER_LOOT_SPECIALIZATION:
             return rewardProto->IsUsableByLootSpecialization(this, true);
         case QUEST_PACKAGE_FILTER_CLASS:
-            return !rewardProto->ItemSpecClassMask || (rewardProto->ItemSpecClassMask & GetClassMask()) != 0;
+        {
+            // Quest package rewards are filtered by ItemSparse.AllowableClass on retail.
+            // ItemSpecClassMask is a server-side specialization mask and must not be
+            // reused here: Stone Buckler (2900) has AllowableClass -1 and is offered
+            // to every class, including mages (issue #31134).
+            int32 allowableClass = rewardProto->GetAllowableClass();
+            return allowableClass < 0 || (allowableClass & GetClassMask()) != 0;
+        }
         case QUEST_PACKAGE_FILTER_EVERYONE:
             return true;
         default:
