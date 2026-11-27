@@ -887,6 +887,10 @@ bool Unit::HasBreakableByDamageCrowdControlAura(Unit const* excludeCasterChannel
         else
             victim->RemoveAurasWithInterruptFlags(SpellAuraInterruptFlags::Damage);
 
+        DamageInfo damageInfo(attacker, victim, damageTaken, spellProto, damageSchoolMask, damagetype,
+            cleanDamage ? cleanDamage->attackType : BASE_ATTACK);
+        victim->RemoveAurasWithDamageCancelsScript(damageInfo);
+
         if (!damageTaken && damagetype != DOT && cleanDamage && cleanDamage->absorbed_damage)
             if (victim != attacker && victim->GetTypeId() == TYPEID_PLAYER)
                 if (Spell* spell = victim->m_currentSpells[CURRENT_GENERIC_SPELL])
@@ -4306,6 +4310,39 @@ void Unit::RemoveAurasWithInterruptFlags(InterruptFlags flag, SpellInfo const* s
 
 template TC_GAME_API void Unit::RemoveAurasWithInterruptFlags(SpellAuraInterruptFlags flag, SpellInfo const* source);
 template TC_GAME_API void Unit::RemoveAurasWithInterruptFlags(SpellAuraInterruptFlags2 flag, SpellInfo const* source);
+
+void Unit::RemoveAurasWithDamageCancelsScript(DamageInfo const& damageInfo)
+{
+    SpellInfo const* source = damageInfo.GetSpellInfo();
+    if (source && source->HasAttribute(SPELL_ATTR4_REACTIVE_DAMAGE_PROC))
+        return;
+
+    for (AuraApplicationList::iterator iter = m_interruptableAuras.begin(); iter != m_interruptableAuras.end();)
+    {
+        AuraApplication const* aurApp = *iter;
+        Aura* aura = aurApp->GetBase();
+        ++iter;
+
+        if (!aura->GetSpellInfo()->HasAuraInterruptFlag(SpellAuraInterruptFlags::DamageCancelsScript))
+            continue;
+        if (source && aura->GetId() == source->Id)
+            continue;
+        if (IsInterruptFlagIgnoredForSpell(SpellAuraInterruptFlags::DamageCancelsScript, this, aura->GetSpellInfo(), false, source))
+            continue;
+
+        bool cancel = false;
+        aura->CallScriptDamageCancelsScriptHandlers(aurApp, damageInfo, cancel);
+        if (!cancel)
+            continue;
+
+        uint32 removedAuras = m_removedAurasCount;
+        RemoveAura(aura, AURA_REMOVE_BY_INTERRUPT);
+        if (m_removedAurasCount > removedAuras + 1)
+            iter = m_interruptableAuras.begin();
+    }
+
+    UpdateInterruptMask();
+}
 
 void Unit::RemoveAurasWithFamily(SpellFamilyNames family, flag128 const& familyFlag, ObjectGuid casterGUID)
 {

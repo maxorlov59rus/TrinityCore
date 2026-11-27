@@ -2471,6 +2471,22 @@ void Aura::CallScriptEnterLeaveCombatHandlers(AuraApplication const* aurApp, boo
     }
 }
 
+void Aura::CallScriptDamageCancelsScriptHandlers(AuraApplication const* aurApp, DamageInfo const& damageInfo, bool& cancel)
+{
+    for (AuraScript* script : m_loadedScripts)
+    {
+        script->_PrepareScriptCall(AURA_SCRIPT_HOOK_ON_DAMAGE_CANCELS_SCRIPT, aurApp);
+        for (AuraScript::DamageCancelsScriptHandler const& onDamageCancelsScript : script->OnDamageCancelsScript)
+        {
+            bool scriptCancel = false;
+            onDamageCancelsScript.Call(script, aurApp, damageInfo, scriptCancel);
+            cancel |= scriptCancel;
+        }
+
+        script->_FinishScriptCall();
+    }
+}
+
 bool Aura::CallScriptCheckProcHandlers(AuraApplication const* aurApp, ProcEventInfo& eventInfo)
 {
     bool result = true;

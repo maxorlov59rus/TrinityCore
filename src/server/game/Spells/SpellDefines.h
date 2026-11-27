@@ -104,7 +104,7 @@ enum class SpellAuraInterruptFlags : uint32
     NonPeriodicDamage           = 0x01000000,
     LandingOrFlight             = 0x02000000,
     Release                     = 0x04000000,
-    DamageCancelsScript         = 0x08000000, // NYI dedicated aura script hook
+    DamageCancelsScript         = 0x08000000, // AuraScript::OnDamageCancelsScript decides; no default removal
     EnteringCombat              = 0x10000000,
     Login                       = 0x20000000,
     Summon                      = 0x40000000,

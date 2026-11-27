@@ -824,6 +824,7 @@ template TC_GAME_API SpellScriptBase::HookList<AuraScript::CheckEffectProcHandle
 template TC_GAME_API SpellScriptBase::HookList<AuraScript::AuraProcHandler>& SpellScriptBase::HookList<AuraScript::AuraProcHandler>::operator+=(AuraScript::AuraProcHandler&& hook) noexcept;
 template TC_GAME_API SpellScriptBase::HookList<AuraScript::EffectProcHandler>& SpellScriptBase::HookList<AuraScript::EffectProcHandler>::operator+=(AuraScript::EffectProcHandler&& hook) noexcept;
 template TC_GAME_API SpellScriptBase::HookList<AuraScript::EnterLeaveCombatHandler>& SpellScriptBase::HookList<AuraScript::EnterLeaveCombatHandler>::operator+=(AuraScript::EnterLeaveCombatHandler&& hook) noexcept;
+template TC_GAME_API SpellScriptBase::HookList<AuraScript::DamageCancelsScriptHandler>& SpellScriptBase::HookList<AuraScript::DamageCancelsScriptHandler>::operator+=(AuraScript::DamageCancelsScriptHandler&& hook) noexcept;
 
 bool AuraScript::_Validate(SpellInfo const* entry)
 {
@@ -906,6 +907,10 @@ bool AuraScript::_Validate(SpellInfo const* entry)
     for (auto itr = OnEffectSplit.begin(); itr != OnEffectSplit.end(); ++itr)
         if (!itr->GetAffectedEffectsMask(entry))
             TC_LOG_ERROR("scripts", "Spell `{}` Effect `{}` of script `{}` did not match dbc effect data - handler bound to hook `OnEffectSplit` of AuraScript won't be executed", entry->Id, itr->ToString(), m_scriptName);
+
+    for (auto itr = OnDamageCancelsScript.begin(); itr != OnDamageCancelsScript.end(); ++itr)
+        if (!entry->HasEffect(SPELL_EFFECT_APPLY_AURA) && !entry->HasAreaAuraEffect())
+            TC_LOG_ERROR("scripts", "Spell `{}` of script `{}` does not have apply aura effect - handler bound to hook `OnDamageCancelsScript` of AuraScript won't be executed", entry->Id, m_scriptName);
 
     for (auto itr = DoCheckProc.begin(); itr != DoCheckProc.end(); ++itr)
         if (!entry->HasEffect(SPELL_EFFECT_APPLY_AURA) && !entry->HasAreaAuraEffect())
@@ -1238,6 +1243,7 @@ Unit* AuraScript::GetTarget() const
         case AURA_SCRIPT_HOOK_EFFECT_PROC:
         case AURA_SCRIPT_HOOK_EFFECT_AFTER_PROC:
         case AURA_SCRIPT_HOOK_ENTER_LEAVE_COMBAT:
+        case AURA_SCRIPT_HOOK_ON_DAMAGE_CANCELS_SCRIPT:
             return m_auraApplication->GetTarget();
         default:
             TC_LOG_ERROR("scripts", "Script: `{}` Spell: `{}` AuraScript::GetTarget called in a hook in which the call won't have effect!", m_scriptName, m_scriptSpellId);

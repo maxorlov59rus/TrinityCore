@@ -1002,6 +1002,7 @@ enum AuraScriptHookType
     AURA_SCRIPT_HOOK_EFFECT_PROC,
     AURA_SCRIPT_HOOK_EFFECT_AFTER_PROC,
     AURA_SCRIPT_HOOK_AFTER_PROC,
+    AURA_SCRIPT_HOOK_ON_DAMAGE_CANCELS_SCRIPT,
     /*AURA_SCRIPT_HOOK_APPLY,
     AURA_SCRIPT_HOOK_REMOVE, */
 };
@@ -1109,6 +1110,38 @@ public:
         void Call(AuraScript* auraScript) const
         {
             return _invoker.Thunk(*auraScript, _invoker.ImplStorage);
+        }
+    private:
+        ScriptFuncInvoker _invoker;
+    };
+
+    class DamageCancelsScriptHandler final
+    {
+    public:
+        using ScriptFuncInvoker = AuraScript::ScriptFuncInvoker<void, AuraApplication const*, DamageInfo const&, bool&>;
+
+        template<typename ScriptFunc>
+        explicit DamageCancelsScriptHandler(ScriptFunc handler)
+        {
+            using ScriptClass = GetScriptClass_t<ScriptFunc>;
+
+            static_assert(ScriptFuncInvoker::Size >= sizeof(ScriptFunc));
+            static_assert(ScriptFuncInvoker::Alignment >= alignof(ScriptFunc));
+
+            if constexpr (std::is_member_function_pointer_v<ScriptFunc>)
+                static_assert(std::is_invocable_r_v<void, ScriptFunc, ScriptClass&, AuraApplication const*, DamageInfo const&, bool&>,
+                    R""(DamageCancelsScriptHandler signature must be "void HandleDamageCancelsScript(AuraApplication const* aurApp, DamageInfo const& damageInfo, bool& cancel)")"");
+            else
+                static_assert(std::is_invocable_r_v<void, ScriptFunc, ScriptClass&, AuraApplication const*, DamageInfo const&, bool&>,
+                    R""(DamageCancelsScriptHandler signature must be "static void HandleDamageCancelsScript(your_script_class& script, AuraApplication const* aurApp, DamageInfo const& damageInfo, bool& cancel)")"");
+
+            new (_invoker.ImplStorage.data()) ScriptFuncInvoker::Impl<ScriptFunc>{ .Func = handler };
+            _invoker.Thunk = &ScriptFuncInvoker::Impl<ScriptFunc>::Invoke;
+        }
+
+        void Call(AuraScript* auraScript, AuraApplication const* aurApp, DamageInfo const& damageInfo, bool& cancel) const
+        {
+            return _invoker.Thunk(*auraScript, aurApp, damageInfo, cancel, _invoker.ImplStorage);
         }
     private:
         ScriptFuncInvoker _invoker;
@@ -1864,6 +1897,13 @@ public:
     // where function is: void function (bool isNowInCombat);
     HookList<EnterLeaveCombatHandler> OnEnterLeaveCombat;
     #define AuraEnterLeaveCombatFn(F) EnterLeaveCombatHandler(&F)
+
+    // executed when an aura with SpellAuraInterruptFlags::DamageCancelsScript takes damage
+    // `cancel` starts as false; set it to true to remove the aura with AURA_REMOVE_BY_INTERRUPT
+    // example: OnDamageCancelsScript += AuraDamageCancelsScriptFn(class::function);
+    // where function is: void function(AuraApplication const* aurApp, DamageInfo const& damageInfo, bool& cancel);
+    HookList<DamageCancelsScriptHandler> OnDamageCancelsScript;
+    #define AuraDamageCancelsScriptFn(F) DamageCancelsScriptHandler(&F)
 
     // AuraScript interface - hook/effect execution manipulators
 
