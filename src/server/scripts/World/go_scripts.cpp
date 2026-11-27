@@ -1114,8 +1114,49 @@ public:
     }
 };
 
+// Allied-race information objects in the faction embassies. Each object is
+// bound to one race id and opens the same details packet as the embassy NPC
+// contact. Ported from AshamaneCore/Shadowlands-source and adapted to the
+// modern GameObjectAI gossip API.
+class go_allied_race_infos : public GameObjectScript
+{
+public:
+    go_allied_race_infos(char const* name, uint32 raceId) : GameObjectScript(name), _raceId(raceId) { }
+
+    struct go_allied_race_infosAI : public GameObjectAI
+    {
+        go_allied_race_infosAI(GameObject* go, uint32 raceId) : GameObjectAI(go), _raceId(raceId) { }
+
+        bool OnGossipHello(Player* player) override
+        {
+            player->GetSession()->SendOpenAlliedRaceDetails(me->GetGUID(), _raceId);
+            return true;
+        }
+
+        uint32 _raceId;
+    };
+
+    GameObjectAI* GetAI(GameObject* go) const override
+    {
+        return new go_allied_race_infosAI(go, _raceId);
+    }
+
+    uint32 _raceId;
+};
+
 void AddSC_go_scripts()
 {
+    new go_allied_race_infos("go_allied_race_infos_nightborne", 27);
+    new go_allied_race_infos("go_allied_race_infos_highmountaintauren", 28);
+    new go_allied_race_infos("go_allied_race_infos_voidelf", 29);
+    new go_allied_race_infos("go_allied_race_infos_lightforgeddraenei", 30);
+    new go_allied_race_infos("go_allied_race_infos_zandalaritroll", 31);
+    new go_allied_race_infos("go_allied_race_infos_kultiran", 32);
+    new go_allied_race_infos("go_allied_race_infos_darkirondwarf", 34);
+    new go_allied_race_infos("go_allied_race_infos_vulpera", 35);
+    new go_allied_race_infos("go_allied_race_infos_magharorc", 36);
+    new go_allied_race_infos("go_allied_race_infos_mechagnome", 37);
+
     new go_gilded_brazier();
     new go_southfury_moonstone();
     new go_tablet_of_the_seven();
