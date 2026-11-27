@@ -10871,6 +10871,13 @@ void Unit::StopMoving(bool force /*= false*/)
     if (!IsInWorld() || (!force && movespline->Finalized()))
         return;
 
+    if (!movespline->onTransport)
+    {
+        Position& pos = m_movementInfo.pos;
+        Relocate(pos);
+        SetOrientation(pos.GetOrientation());
+    }
+
     // Update position now since Stop does not start a new movement that can be updated later
     if (movespline->HasStarted())
         UpdateSplinePosition();
