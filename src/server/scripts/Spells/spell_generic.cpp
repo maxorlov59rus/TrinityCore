@@ -6007,6 +6007,31 @@ class spell_wandering_ancient : public AuraScript
     }
 };
 
+// 65109 - Deepholm Construct Reactivation
+class spell_deepholm_kill_all_constructs : public SpellScript
+{
+    PrepareSpellScript(spell_deepholm_kill_all_constructs);
+
+    static constexpr uint32 QUEST_DEEPHOLM_CONSTRUCTS = 26762;
+    static constexpr uint32 CREDIT_DEEPHOLM_CONSTRUCT = 43984;
+
+    void GiveQuestCredit()
+    {
+        Unit* caster = GetCaster();
+        if (!caster)
+            return;
+
+        Player* player = caster->ToPlayer();
+        if (player && player->GetQuestStatus(QUEST_DEEPHOLM_CONSTRUCTS) == QUEST_STATUS_INCOMPLETE)
+            player->KilledMonsterCredit(CREDIT_DEEPHOLM_CONSTRUCT);
+    }
+
+    void Register() override
+    {
+        AfterCast += SpellCastFn(spell_deepholm_kill_all_constructs::GiveQuestCredit);
+    }
+};
+
 void AddSC_generic_spell_scripts()
 {
     RegisterSpellScript(spell_gen_absorb0_hitlimit1);
@@ -6210,4 +6235,5 @@ void AddSC_generic_spell_scripts()
     RegisterSpellScript(spell_gen_skyriding_impulse);
     RegisterSpellScript(spell_gen_low_health);
     RegisterSpellScript(spell_wandering_ancient);
+    RegisterSpellScript(spell_deepholm_kill_all_constructs);
 }
