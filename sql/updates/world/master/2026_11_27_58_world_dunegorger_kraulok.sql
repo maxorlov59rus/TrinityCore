@@ -1,0 +1,2 @@
+-- VERIFY: TDB 1210.26091 / world; DekkCore 43adcd995f / boss_dunegorger_kraulok.cpp; живая БД подтвердила NPC 138794 с пустым ScriptName, отсутствие spell_script_names для 276046/275200/275175/276055/276053/275177, creature_text и спавнов. RU-имя уже есть в creature_template_locale; реплики Talk() не используются, дубли локализации не добавляются. Кастомный GUID-спавн DekkCore не переносится.
+UPDATE `creature_template` SET `ScriptName` = 'boss_dunegorger_kraulok' WHERE `entry` = 138794;

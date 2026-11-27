@@ -17,6 +17,9 @@
 
 // This is where scripts' loading functions should be declared:
 
+// World bosses
+void AddSC_boss_dunegorger_kraulok();
+
 // Atal'Dazar
 void AddSC_instance_atal_dazar();
 void AddSC_boss_rezan();
@@ -39,6 +42,9 @@ void AddSC_boss_golden_serpent();
 // void Add${NameOfDirectory}Scripts()
 void AddZandalarScripts()
 {
+    // World bosses
+    AddSC_boss_dunegorger_kraulok();
+
     // Atal'Dazar
     AddSC_instance_atal_dazar();
     AddSC_boss_rezan();
