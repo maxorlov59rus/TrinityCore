@@ -23,6 +23,9 @@ void AddSC_silvermoon_city_midnight();
 // Harandar
 void AddSC_harandar_chapter_1_of_caves_and_cradles();
 
+// Haranir
+void AddSC_haranir_racial();
+
 // Maisara Caverns
 void AddSC_boss_murojin_and_nekraxx();
 void AddSC_maisara_caverns();
@@ -41,6 +44,9 @@ void AddQuelThalasScripts()
 
     // Harandar
     AddSC_harandar_chapter_1_of_caves_and_cradles();
+
+    // Haranir
+    AddSC_haranir_racial();
 
     // Maisara Caverns
     AddSC_boss_murojin_and_nekraxx();
