@@ -2769,6 +2769,10 @@ void AuraEffect::HandleAuraMounted(AuraApplication const* aurApp, uint8 mode, bo
 
     Unit* target = aurApp->GetTarget();
 
+    static constexpr uint32 SPELL_SKYRIDING = 404464;
+    static constexpr uint32 SPELL_STEADY_FLIGHT = 404468;
+    static constexpr uint32 SPELL_VIGOR = 372773;
+
     if (apply)
     {
         if (mode & AURA_EFFECT_HANDLE_SEND_FOR_CLIENT_MASK)
@@ -2845,6 +2849,27 @@ void AuraEffect::HandleAuraMounted(AuraApplication const* aurApp, uint8 mode, bo
                 target->SetFlightCapabilityID(mountCapability->FlightCapabilityID, true);
                 target->CastSpell(target, mountCapability->ModSpellAuraID, this);
             }
+
+            if (Player* player = target->ToPlayer())
+            {
+                if (player->HasSpell(90265) || player->HasSpell(34091) || player->HasSpell(34090))
+                {
+                    target->SetCanFly(true);
+                    if (player->HasAura(SPELL_STEADY_FLIGHT))
+                    {
+                        target->SetCanAdvFly(false);
+                        target->SetCanDoubleJump(false);
+                    }
+                    else
+                    {
+                        target->SetCanAdvFly(true);
+                        target->SetCanDoubleJump(true);
+                        target->SetFlightCapabilityID(1, true);
+                        if (!player->HasAura(SPELL_VIGOR))
+                            player->CastSpell(player, SPELL_VIGOR, true);
+                    }
+                }
+            }
         }
     }
     else
@@ -2872,7 +2897,16 @@ void AuraEffect::HandleAuraMounted(AuraApplication const* aurApp, uint8 mode, bo
                 target->RemoveAurasDueToSpell(mountCapability->ModSpellAuraID, target->GetGUID());
 
         if (!replacedByAnotherMount)
+        {
+            if (target->HasAura(SPELL_SKYRIDING) || target->HasAura(SPELL_STEADY_FLIGHT) || target->HasAura(SPELL_VIGOR))
+            {
+                target->SetCanFly(false);
+                target->SetCanAdvFly(false);
+                target->SetCanDoubleJump(false);
+            }
+            target->RemoveAura(SPELL_VIGOR);
             target->SetFlightCapabilityID(0, true);
+        }
     }
 }
 

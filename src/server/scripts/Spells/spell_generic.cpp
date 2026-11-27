@@ -5933,24 +5933,46 @@ class spell_gen_switch_flight_style : public SpellScript
 {
     static constexpr uint32 SPELL_FLIGHT_STYLE_SKYRIDING = 404464;
     static constexpr uint32 SPELL_FLIGHT_STYLE_STEADY = 404468;
+    static constexpr uint32 SPELL_VIGOR = 372773;
 
     bool Validate(SpellInfo const* /*spellInfo*/) override
     {
-        return ValidateSpellInfo({ SPELL_FLIGHT_STYLE_SKYRIDING, SPELL_FLIGHT_STYLE_STEADY });
+        return ValidateSpellInfo({ SPELL_FLIGHT_STYLE_SKYRIDING, SPELL_FLIGHT_STYLE_STEADY, SPELL_VIGOR });
     }
 
     void HandleDummy(SpellEffIndex /*effIndex*/) const
     {
         Unit* caster = GetCaster();
-        if (caster->HasAura(SPELL_FLIGHT_STYLE_SKYRIDING))
+        if (!caster)
+            return;
+
+        bool hadSkyriding = caster->HasAura(SPELL_FLIGHT_STYLE_SKYRIDING);
+
+        caster->RemoveAurasDueToSpell(SPELL_FLIGHT_STYLE_SKYRIDING);
+        caster->RemoveAurasDueToSpell(SPELL_FLIGHT_STYLE_STEADY);
+
+        if (hadSkyriding)
         {
-            caster->RemoveAurasDueToSpell(SPELL_FLIGHT_STYLE_SKYRIDING);
             caster->CastSpell(caster, SPELL_FLIGHT_STYLE_STEADY, TRIGGERED_FULL_MASK);
+            caster->RemoveAura(SPELL_VIGOR);
+            if (caster->IsMounted())
+            {
+                caster->SetCanAdvFly(false);
+                caster->SetCanDoubleJump(false);
+            }
         }
         else
         {
-            caster->RemoveAurasDueToSpell(SPELL_FLIGHT_STYLE_STEADY);
             caster->CastSpell(caster, SPELL_FLIGHT_STYLE_SKYRIDING, TRIGGERED_FULL_MASK);
+            if (!caster->HasAura(SPELL_VIGOR))
+                caster->CastSpell(caster, SPELL_VIGOR, TRIGGERED_FULL_MASK);
+            if (caster->IsMounted())
+            {
+                caster->SetCanFly(true);
+                caster->SetCanAdvFly(true);
+                caster->SetCanDoubleJump(true);
+                caster->SetFlightCapabilityID(1, true);
+            }
         }
     }
 

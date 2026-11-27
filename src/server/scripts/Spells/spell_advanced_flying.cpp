@@ -38,6 +38,15 @@ enum AdvancedFlyingSpells
     SPELL_VIGOR_CACHE           = 433547,
     SPELL_RIDING_ABROAD         = 432503, // TODO outside of dragon isles
     SPELL_ENERGY_WIDGET         = 423624,
+
+    SPELL_SKYRIDING             = 404464,
+    SPELL_STEADY_FLIGHT         = 404468,
+    SPELL_SKYRIDING_BASICS      = 376777,
+    SPELL_SWITCH_FLIGHT_STYLE   = 436854,
+    SPELL_VIGOR                 = 372773,
+    SPELL_LIFT_OFF              = 374763,
+    SPELL_SURGE_FORWARD         = 372608,
+    SPELL_WHIRLING_SURGE        = 361584,
 };
 
 // 373646 - Soar (Racial)
@@ -201,6 +210,56 @@ class spell_af_whirling_surge : public SpellScript
     }
 };
 
+class adv_flying_check : public PlayerScript
+{
+public:
+    adv_flying_check() : PlayerScript("adv_flying_check") { }
+
+    void CheckFlying(Player* player) const
+    {
+        if (!player || !player->IsInWorld() || player->GetLevel() < 10)
+            return;
+
+        auto learnSpell = [player](uint32 spellId)
+        {
+            if (!player->HasSpell(spellId))
+                player->LearnSpell(spellId, false);
+        };
+
+        learnSpell(SPELL_SKYRIDING_BASICS);
+        learnSpell(SPELL_LIFT_OFF);
+        learnSpell(SPELL_SURGE_FORWARD);
+        learnSpell(SPELL_WHIRLING_SURGE);
+
+        if (player->GetLevel() >= 20)
+            learnSpell(SPELL_SWITCH_FLIGHT_STYLE);
+
+        bool hasSkyriding = player->HasAura(SPELL_SKYRIDING);
+        bool hasSteadyFlight = player->HasAura(SPELL_STEADY_FLIGHT);
+
+        if (hasSkyriding && hasSteadyFlight)
+            player->RemoveAura(SPELL_STEADY_FLIGHT);
+        else if (!hasSkyriding && !hasSteadyFlight)
+            player->CastSpell(player, SPELL_SKYRIDING, TRIGGERED_FULL_MASK);
+
+        // The client checks CasterAuraSpell 372773 before allowing active Skyriding abilities.
+        if (player->HasAura(SPELL_SKYRIDING) && !player->HasAura(SPELL_VIGOR))
+            player->CastSpell(player, SPELL_VIGOR, TRIGGERED_FULL_MASK);
+        else if (player->HasAura(SPELL_STEADY_FLIGHT) && player->HasAura(SPELL_VIGOR))
+            player->RemoveAura(SPELL_VIGOR);
+    }
+
+    void OnLogin(Player* player, bool /*firstLogin*/) override
+    {
+        CheckFlying(player);
+    }
+
+    void OnLevelChanged(Player* player, uint8 /*oldLevel*/) override
+    {
+        CheckFlying(player);
+    }
+};
+
 void AddSC_advanced_flying_spell_scripts()
 {
     RegisterSpellScript(spell_af_skyriding);
@@ -208,4 +267,5 @@ void AddSC_advanced_flying_spell_scripts()
     RegisterSpellScript(spell_af_skyward_ascent);
     RegisterSpellScript(spell_af_surge_forward);
     RegisterSpellScript(spell_af_whirling_surge);
+    new adv_flying_check();
 }

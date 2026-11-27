@@ -3356,6 +3356,11 @@ void SpellMgr::LoadSpellInfoCustomAttributes()
                 const_cast<SpellInfo&>(spellInfo).AttributesCu |= SPELL_ATTR0_CU_AURA_CANNOT_BE_SAVED;
     }
 
+    // Skyriding flight-style auras are reapplied by adv_flying_check on login/level change.
+    for (uint32 spellId : { 404464u, 404468u, 372773u })
+        for (SpellInfo const& spellInfo : _GetSpellInfo(spellId))
+            const_cast<SpellInfo&>(spellInfo).AttributesCu |= SPELL_ATTR0_CU_AURA_CANNOT_BE_SAVED;
+
     TC_LOG_INFO("server.loading", ">> Loaded SpellInfo custom attributes in {} ms", GetMSTimeDiffToNow(oldMSTime));
 }
 
