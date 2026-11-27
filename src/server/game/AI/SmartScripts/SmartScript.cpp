@@ -2725,6 +2725,20 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
                 mTimedActionWaitEvent = std::move(waitEvent);
             break;
         }
+        case SMART_ACTION_PLAYER_CHOICE:
+        {
+            if (!GetBaseObject())
+                break;
+
+            TC_LOG_DEBUG("scripts.ai", "SmartScript::ProcessAction:: SMART_ACTION_PLAYER_CHOICE: choiceId {}", e.action.playerChoice.choiceId);
+
+            ObjectGuid sender = GetBaseObject()->GetGUID();
+            for (WorldObject* target : targets)
+                if (Player* player = target->ToPlayer())
+                    player->SendPlayerChoice(sender, int32(e.action.playerChoice.choiceId));
+
+            break;
+        }
         default:
             TC_LOG_ERROR("sql.sql", "SmartScript::ProcessAction: Entry {} SourceType {}, Event {}, Unhandled Action type {}", e.entryOrGuid, e.GetScriptType(), e.event_id, e.GetActionType());
             break;

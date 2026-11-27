@@ -1037,6 +1037,7 @@ bool SmartAIMgr::CheckUnusedActionParams(SmartScriptHolder const& e)
             case SMART_ACTION_EXIT_VEHICLE: return NO_PARAMS;
             case SMART_ACTION_RESUME_MOVEMENT: return sizeof(SmartAction::resumeMovement);
             case SMART_ACTION_FALL: return sizeof(SmartAction::fall);
+            case SMART_ACTION_PLAYER_CHOICE: return sizeof(SmartAction::playerChoice);
             default:
                 TC_LOG_WARN("sql.sql", "SmartAIMgr: Entry {} SourceType {} Event {} Action {} is using an action with no unused params specified in SmartAIMgr::CheckUnusedActionParams(), please report this.",
                     e.entryOrGuid, e.GetScriptType(), e.event_id, e.GetActionType());
@@ -2508,6 +2509,15 @@ bool SmartAIMgr::IsEventValid(SmartScriptHolder& e)
             if (e.action.enterVehicle.seatId >= MAX_VEHICLE_SEATS)
             {
                 TC_LOG_ERROR("sql.sql", "SmartAIMgr: Entry {} SourceType {} Event {} Action {} uses incorrect seat id (out of range 0 - {}), skipped.", e.entryOrGuid, e.GetScriptType(), e.event_id, e.GetActionType(), MAX_VEHICLE_SEATS - 1);
+                return false;
+            }
+            break;
+        }
+        case SMART_ACTION_PLAYER_CHOICE:
+        {
+            if (!sObjectMgr->GetPlayerChoice(int32(e.action.playerChoice.choiceId)))
+            {
+                TC_LOG_ERROR("sql.sql", "SmartAIMgr: Entry {} SourceType {} Event {} Action {} uses non-existent PlayerChoice entry {}, skipped.", e.entryOrGuid, e.GetScriptType(), e.event_id, e.GetActionType(), e.action.playerChoice.choiceId);
                 return false;
             }
             break;

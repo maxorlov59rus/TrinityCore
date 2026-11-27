@@ -615,7 +615,8 @@ enum SMART_ACTION
     SMART_ACTION_EXIT_VEHICLE                       = 157,
     SMART_ACTION_RESUME_MOVEMENT                    = 158,    // MovementSlot (default = 0, active = 1, controlled = 2), ResumeTime (ms)
     SMART_ACTION_FALL                               = 159,    // pointId
-    SMART_ACTION_END                                = 160
+    SMART_ACTION_PLAYER_CHOICE                      = 160,    // ChoiceId
+    SMART_ACTION_END                                = 161
 };
 
 enum class SmartActionSummonCreatureFlags
@@ -1281,6 +1282,11 @@ struct SmartAction
             uint32 movementSlot;
             uint32 resumeTimer;
         } resumeMovement;
+
+        struct
+        {
+            uint32 choiceId;
+        } playerChoice;
 
         //! Note for any new future actions
         //! All parameters must have type uint32
