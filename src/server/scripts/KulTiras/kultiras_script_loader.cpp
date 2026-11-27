@@ -34,6 +34,7 @@ void AddSC_instance_shrine_of_the_storm();
 // Waycrest Manor
 void AddSC_boss_heartsbane_triad();
 void AddSC_boss_soulbound_goliath();
+void AddSC_boss_gorak_tul();
 void AddSC_boss_lord_and_lady_waycrest();
 void AddSC_instance_waycrest_manor();
 void AddSC_waycrest_manor();
@@ -59,6 +60,7 @@ void AddKulTirasScripts()
     // Waycrest Manor
     AddSC_boss_heartsbane_triad();
     AddSC_boss_soulbound_goliath();
+    AddSC_boss_gorak_tul();
     AddSC_boss_lord_and_lady_waycrest();
     AddSC_instance_waycrest_manor();
     AddSC_waycrest_manor();
