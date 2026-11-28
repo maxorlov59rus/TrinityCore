@@ -99,6 +99,7 @@ struct boss_humongris : public ScriptedAI
             switch (eventId)
             {
             case EVENT_FIRE_BOOM:
+                Talk(TALK_H_FIRE_BOOM);
                 DoCastAOE(SPELL_FIRE_BOOM_TARGET);
                 events.Repeat(14s);
                 break;
@@ -110,11 +111,15 @@ struct boss_humongris : public ScriptedAI
 
             case EVENT_ICE_FIST:
                 if (Unit* target = SelectTarget(SelectTargetMethod::Random, 0, 10.0f, true))
+                {
+                    Talk(TALK_H_ICE_FIST);
                     DoCast(target, SPELL_ICE_FIST_DAMAGE);
+                }
                 events.Repeat(29s);
                 break;
 
             case EVENT_MAKE_SNOW:
+                Talk(TALK_H_MAKE_THE_SNOW_1);
                 DoCast(SPELL_MAKE_SNOW_CAST);
                 events.Repeat(35s);
                 break;
