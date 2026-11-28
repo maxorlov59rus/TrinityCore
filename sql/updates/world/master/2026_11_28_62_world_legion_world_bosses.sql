@@ -17,7 +17,7 @@ DELETE FROM `spell_script_names` WHERE (`spell_id`, `ScriptName`) IN (
     (219493, 'spell_gen_snow_crash'),
     (220295, 'spell_flotsam_jetsam_target'),
     (220340, 'spell_flotsam_getsam_target'),
-    (220377, 'spell_flotsam_getsam_damage'),
+    (220367, 'spell_flotsam_getsam_damage'),
     (223357, 'spell_flotsam_oozing_bile_aura'),
     (223374, 'spell_flotsam_yaksam_target'),
     (233484, 'spell_brutallus_meteor_slash'),
@@ -34,7 +34,7 @@ INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
     (219493, 'spell_gen_snow_crash'),
     (220295, 'spell_flotsam_jetsam_target'),
     (220340, 'spell_flotsam_getsam_target'),
-    (220377, 'spell_flotsam_getsam_damage'),
+    (220367, 'spell_flotsam_getsam_damage'),
     (223357, 'spell_flotsam_oozing_bile_aura'),
     (223374, 'spell_flotsam_yaksam_target'),
     (233484, 'spell_brutallus_meteor_slash'),
@@ -55,7 +55,7 @@ UPDATE `creature_template` SET `ScriptName` = 'boss_malificus'             WHERE
 
 -- VERIFY после применения:
 -- SELECT spell_id, ScriptName FROM spell_script_names
---   WHERE spell_id IN (216427,216817,217893,217986,219493,220295,220340,220377,223357,223374,233484,233566,233614,241498);
+--   WHERE spell_id IN (216427,216817,217893,217986,219493,220295,220340,220367,223357,223374,233484,233566,233614,241498);
 -- Должно быть ровно 14 строк, по одной на каждый ID.
 -- SELECT entry, ScriptName FROM creature_template
 --   WHERE entry IN (99929,108879,109331,109456,110378,112128,117239,117303,121124);
