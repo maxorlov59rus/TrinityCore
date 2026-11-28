@@ -1,97 +1,219 @@
-# ![logo](https://community.trinitycore.org/public/style_images/1_trinitycore.png) TrinityCore (master)
+# TrinityCore · `new-content`
 
-[![Average time to resolve an issue](https://isitmaintained.com/badge/resolution/TrinityCore/TrinityCore.svg)](https://isitmaintained.com/project/TrinityCore/TrinityCore "Average time to resolve an issue") [![Percentage of issues still open](https://isitmaintained.com/badge/open/TrinityCore/TrinityCore.svg)](https://isitmaintained.com/project/TrinityCore/TrinityCore "Percentage of issues still open")
+[![License: GPL v2](https://img.shields.io/badge/license-GPL--2.0-blue.svg)](COPYING)
+![Client](https://img.shields.io/badge/client-12.1.5.70077-green.svg)
+![Branch](https://img.shields.io/badge/branch-new--content-purple.svg)
 
---------------
+> Рабочая ветка на базе TrinityCore `master`. Цель — добавлять только **проверенный Blizzlike-контент** для retail-клиента `12.1.5.70077`, не ломая то, что уже работает в апстриме.
 
+---
 
-* [Build Status](#build-status)
-* [Introduction](#introduction)
-* [Requirements](#requirements)
-* [Install](#install)
-* [Reporting issues](#reporting-issues)
-* [Submitting fixes](#submitting-fixes)
-* [Copyright](#copyright)
-* [Authors &amp; Contributors](#authors--contributors)
-* [Links](#links)
+## Содержание
 
+- [Быстрые ссылки](#быстрые-ссылки)
+- [О проекте](#о-проекте)
+- [Принципы разработки](#принципы-разработки)
+- [Что уже добавлено](#что-уже-добавлено)
+- [Требования](#требования)
+- [Сборка](#сборка)
+- [База данных](#база-данных)
+- [Правила SQL](#правила-sql)
+- [Локализация](#локализация)
+- [Как добавить контент](#как-добавить-контент)
+- [Проверка перед коммитом](#проверка-перед-коммитом)
+- [Известные ограничения](#известные-ограничения)
+- [Источники и ссылки](#источники-и-ссылки)
+- [Лицензия](#лицензия)
 
+---
 
-## Build Status
+## Быстрые ссылки
 
-master | 3.3.5 | cata_classic
-:------------: | :------------: | :------------:
-[![master Build Status](https://circleci.com/gh/TrinityCore/TrinityCore/tree/master.svg?style=shield)](https://circleci.com/gh/TrinityCore/TrinityCore/tree/master) | [![3.3.5 Build Status](https://circleci.com/gh/TrinityCore/TrinityCore/tree/3.3.5.svg?style=shield)](https://circleci.com/gh/TrinityCore/TrinityCore/tree/3.3.5) | [![cata_classic Build Status](https://circleci.com/gh/TrinityCore/TrinityCore/tree/cata_classic.svg?style=shield)](https://circleci.com/gh/TrinityCore/TrinityCore/tree/cata_classic)
-[![master Build status](https://ci.appveyor.com/api/projects/status/54d0u1fxe50ad80o/branch/master?svg=true)](https://ci.appveyor.com/project/DDuarte/trinitycore/branch/master) | [![Build status](https://ci.appveyor.com/api/projects/status/54d0u1fxe50ad80o/branch/3.3.5?svg=true)](https://ci.appveyor.com/project/DDuarte/trinitycore/branch/3.3.5) | [![Build status](https://ci.appveyor.com/api/projects/status/54d0u1fxe50ad80o/branch/cata_classic?svg=true)](https://ci.appveyor.com/project/DDuarte/trinitycore/branch/cata_classic)
-[![master Windows Build status](https://github.com/TrinityCore/TrinityCore/actions/workflows/win-x64-build.yml/badge.svg?branch=master&event=push)](https://github.com/TrinityCore/TrinityCore/actions?query=workflow%3A%22Windows%20x64%22+branch%3Amaster+event%3Apush) | [![3.3.5 Windows Build status](https://github.com/TrinityCore/TrinityCore/actions/workflows/win-x64-build.yml/badge.svg?branch=3.3.5&event=push)](https://github.com/TrinityCore/TrinityCore/actions?query=workflow%3A%22Windows%20x64%22+branch%3A3.3.5+event%3Apush) | [![cata_classic GCC Build status](https://github.com/TrinityCore/TrinityCore/actions/workflows/gcc-build.yml/badge.svg?branch=cata_classic&event=push)](https://github.com/TrinityCore/TrinityCore/actions?query=workflow%3AGCC+branch%3Acata_classic+event%3Apush)
-[![master Ubuntu Build status](https://github.com/TrinityCore/TrinityCore/actions/workflows/linux-build.yml/badge.svg?branch=master&event=push)](https://github.com/TrinityCore/TrinityCore/actions?query=workflow%3A%22Ubuntu%20x64%22+branch%3Amaster+event%3Apush) | [![3.3.5 Ubuntu Build status](https://github.com/TrinityCore/TrinityCore/actions/workflows/linux-build.yml/badge.svg?branch=3.3.5&event=push)](https://github.com/TrinityCore/TrinityCore/actions?query=workflow%3A%22Ubuntu%20x64%22+branch%3A3.3.5+event%3Apush) | [![cata_classic GCC Build status](https://github.com/TrinityCore/TrinityCore/actions/workflows/gcc-build.yml/badge.svg?branch=cata_classic&event=push)](https://github.com/TrinityCore/TrinityCore/actions?query=workflow%3AGCC+branch%3Acata_classic+event%3Apush)
-[![master macOS arm64 Build status](https://github.com/TrinityCore/TrinityCore/actions/workflows/macos-arm-build.yml/badge.svg?branch=master&event=push)](https://github.com/TrinityCore/TrinityCore/actions?query=workflow%3A%22macOS%20arm64%22+branch%3Amaster+event%3Apush) | [![3.3.5 macOS arm64 Build status](https://github.com/TrinityCore/TrinityCore/actions/workflows/macos-arm-build.yml/badge.svg?branch=3.3.5&event=push)](https://github.com/TrinityCore/TrinityCore/actions?query=workflow%3A%22macOS%20arm64%22+branch%3A3.3.5+event%3Apush) | [![cata_classic macOS arm64 Build status](https://github.com/TrinityCore/TrinityCore/actions/workflows/macos-arm-build.yml/badge.svg?branch=cata_classic&event=push)](https://github.com/TrinityCore/TrinityCore/actions?query=workflow%3A%22macOS%20arm64%22+branch%3Acata_classic+event%3Apush)
-[![Coverity Scan Build Status](https://scan.coverity.com/projects/435/badge.svg)](https://scan.coverity.com/projects/435) | [![Coverity Scan Build Status](https://scan.coverity.com/projects/4656/badge.svg)](https://scan.coverity.com/projects/4656) |
+- **[Чат проекта в Lolka (аналог Discord)](https://lolka.gg/8snOouNIX)** — обсуждение сборки, баг-репорты и координация работ.
+- [Официальный сайт TrinityCore](https://www.trinitycore.org)
+- [Wiki TrinityCore](https://www.trinitycore.info)
+- [Issue tracker TrinityCore](https://github.com/TrinityCore/TrinityCore/issues)
+- [Исходный репозиторий TrinityCore](https://github.com/TrinityCore/TrinityCore)
 
-## Introduction
+Приглашение в чат:
 
-TrinityCore is a *MMORPG* Framework based mostly in C++.
+![Приглашение в чат Lolka](doc/assets/lolka-invite.png)
 
-It is derived from *MaNGOS*, the *Massive Network Game Object Server*, and is
-based on the code of that project with extensive changes over time to optimize,
-improve and cleanup the codebase at the same time as improving the in-game
-mechanics and functionality.
+---
 
-It is completely open source; community involvement is highly encouraged.
+## О проекте
 
-If you wish to contribute ideas or code, please visit our site linked below or
-make pull requests to our [Github repository](https://github.com/TrinityCore/TrinityCore/pulls).
+Это не официальный дистрибутив TrinityCore, а локальная ветка `new-content`, в которую выборочно переносятся недостающие игровые механики, квесты, спеллы и данные. Основной упор делается на материал, который можно подтвердить клиентскими DB2 и исходным кодом апстрима, а не на «кастомные» фичи.
 
-For further information on the TrinityCore project, please visit our project
-website at [TrinityCore.org](https://www.trinitycore.org).
+Источники, которые разбираются и фильтруются:
 
-## Requirements
+- официальный [TrinityCore `master`](https://github.com/TrinityCore/TrinityCore) и его открытые issue/PR;
+- [Dragonflight_Dekk-Core](https://github.com/KamiliaBlow/Dragonflight_Dekk-Core), каталоги `DekkCore/Scenarios` и `DekkCore/Legion`;
+- [aquadeus/TrinityCore](https://github.com/aquadeus/TrinityCore) — отдельные проверенные ветки с исправлениями квестов;
+- локальный репарс клиентских **DB2 → CSV** для сборки `12.1.5.70077`.
 
+Всё, что нельзя подтвердить клиентом или кодом, в ветку не попадает.
 
-Software requirements are available in the [wiki](https://trinitycore.info/en/install/requirements) for
-Windows, Linux and macOS.
+---
 
+## Принципы разработки
 
-## Install
+1. **Не ломать работающее.** Приоритет — совместимость с текущим `master`; правки в общие файлы скриптов сводятся к минимуму.
+2. **Только `Custom` + SQL.** Новый C++-код живёт в `src/server/scripts/Custom/**` и подключается через `custom_script_loader.cpp`. Файлы `src/server/scripts/**` из `master` и `src/server/game/**` не редактируются.
+3. **Никаких ручных правок `ScriptLoader.cpp`.** Он генерируется системой сборки.
+4. **Данные из клиента.** ID спеллов, квестов, NPC, сценариев и констант сверяются с DB2 `12.1.5.70077`; выдуманные значения запрещены.
+5. **Idempotent SQL.** Каждый файл можно применять повторно: `DELETE` только своих строк, затем `INSERT`.
+6. **Локализация.** Новые строки обязаны иметь базу `enUS` и русский перевод; перед созданием новых строк проверяются `BroadcastTextId` и уже существующие `*_locale`.
+7. **Локальные коммиты.** Изменения фиксируются в `new-content`; push выполняется только после явного согласия.
 
-Detailed installation guides are available in the [wiki](https://trinitycore.info/en/home) for
-Windows, Linux and macOS.
+---
 
+## Что уже добавлено
 
-## Reporting issues
+| Дата | Файл(ы) | Что исправлено |
+|---|---|---|
+| 2026-11-28 | `sql/updates/hotfixes/master/2026_11_28_62_hotfixes_scenarios.sql`, `sql/updates/world/master/2026_11_28_62_world_scenarios.sql` | Зависимости сценария `566`, шаги `1053/1054/1055`, сценарии `569/570/571`, criteria/criteria-tree, `modifier_tree 12711`, `world_state_expression 5497`. |
+| 2026-11-28 | `src/server/scripts/Custom/Pandaria/spell_monkey_wisdom_text.cpp`, `…_monkey_wisdom_text.sql` | Современный `SpellScript` для `104126`, привязка через `spell_script_names`, без правки апстрим-файлов. |
+| 2026-11-28 | `…_world_gilneas_chapter_1.sql` | Гилнеас, Glaive Square до Lockdown (issue `#32109`): корректный `entry 34851` + условие по `StringId`, уборка устаревших per-guid smart scripts. |
+| 2026-11-28 | `…_world_earthen_intro_chain.sql` | Вводная цепочка Earthen: `79200 → 83328`, `83328 ← 79200`, проверено на живой БД. |
+| 2026-11-28 | `…_world_prayer_circle_proc.sql` | «Молитвенный круг» (`321377`): восстановлено ограничение проков на Holy Word: Sanctify по данным `Talent.db2` и `SpellClassOptions.db2`. |
+| 2026-11-28 | `src/server/scripts/Custom/DunMorogh/npc_ultrasafe_personnel_launcher.cpp`, `…_quest_25839_launcher.sql` | Квест `25839` «The Ultrasafe Personnel Launcher»: spellclick `77424` вместо `59099`, AI катапульты в `Custom`. |
 
-Issues can be reported via the [Github issue tracker](https://github.com/TrinityCore/TrinityCore/labels/Branch-master).
+В работе: выборочный перенос подтверждённого контента из `DekkCore/Scenarios` и `DekkCore/Legion`.
 
-Please take the time to review existing issues before submitting your own to
-prevent duplicates.
+---
 
-In addition, thoroughly read through the [issue tracker guide](https://community.trinitycore.org/topic/37-the-trinitycore-issuetracker-and-you/) to ensure
-your report contains the required information. Incorrect or poorly formed
-reports are wasteful and are subject to deletion.
+## Требования
 
+- **OS:** Windows 10/11 x64 (основная платформа проекта) или Linux/macOS через штатные инструкции TrinityCore.
+- **Компилятор:** Visual Studio 2022 Build Tools (English/ Russian pack не обязателен), C++17.
+- **Сборка:** CMake ≥ 3.20, Ninja.
+- **Зависимости:** Boost, OpenSSL, MySQL 8.4 client library. На текущей машине используются `C:\libs\boost` и `C:\libs\openssl`.
+- **Сервер БД:** MySQL / MariaDB с поддержкой schema из `sql/base`.
+- **Клиент:** `World of Warcraft 12.1.5.70077` (именно под него сверяются DB2).
 
-## Submitting fixes
+---
 
-C++ fixes are submitted as pull requests via Github. For more information on how to
-properly submit a pull request, read the [how-to: maintain a remote fork](https://community.trinitycore.org/topic/9002-howto-maintain-a-remote-fork-for-pull-requests-tortoisegit/).
-For SQL only fixes, open a ticket; if a bug report exists for the bug, post on an existing ticket.
+## Сборка
 
+Из корня репозитория:
 
-## Copyright
+```bat
+call "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
+set BOOST_ROOT=C:\libs\boost
+set OPENSSL_ROOT_DIR=C:\libs\openssl
+cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DSCRIPTS=static -DTOOLS=ON
+cmake --build build
+```
 
-License: GPL 2.0
+Результат: `build\bin\RelWithDebInfo\authserver.exe`, `worldserver.exe`, инструменты.
 
-Read file [COPYING](COPYING).
+### Важно: новые `.cpp` требуют повторного configure
 
+`cmake/macros/AutoCollect.cmake` рекурсивно собирает `*.cpp` через `file(GLOB)`, но **без `CONFIGURE_DEPENDS`**. Поэтому после добавления любого нового файла в `src/server/scripts/Custom/**` нужно заново выполнить команду `cmake -S . -B build ...`, иначе новый `.cpp` не попадёт в проект. Редактирование уже существующего `.cpp` достаточно обычной пересборки.
 
-## Authors &amp; Contributors
+---
 
-Read file [AUTHORS](AUTHORS).
+## База данных
 
+1. Создать БД из `sql/create/` (`auth`, `character`, `world`).
+2. Применить `sql/base/` в порядке: `auth_database.sql`, `characters_database.sql`, `world_database.sql`.
+3. Применить обновления из `sql/updates/` по порядку: `auth`, `characters`, `world`, `hotfixes`. Файлы с суффиксом `_62_` относятся к этой ветке и идут последними.
+4. Для локальной проверки используется MySQL 8.4 на `127.0.0.1:3306`:
 
-## Links
+```bat
+mysql --protocol=TCP -h 127.0.0.1 -P 3306 -u <user> -p -D world -e "SOURCE C:/path/to/update.sql"
+```
 
-* [Website](https://www.trinitycore.org)
-* [Wiki](https://www.trinitycore.info)
-* [Forums](https://talk.trinitycore.org/)
-* [Discord](https://discord.trinitycore.org/)
+После применения каждого `_62`-файла выполните `SELECT` из блока `VERIFY` в конце файла и сравните результат с ожидаемым.
+
+---
+
+## Правила SQL
+
+Каждый файл обновления этой ветки соблюдает правила:
+
+- имя вида `YYYY_MM_DD_62_<scope>.sql` (`world` или `hotfixes`);
+- в начале один блок `-- VERIFY:` с источником, ID и объяснением, почему значения корректны;
+- комментарии на русском языке;
+- `DELETE` только тех строк, которые файл сам добавляет, затем `INSERT`;
+- в конце `-- VERIFY после применения:` с конкретными `SELECT` и ожидаемым результатом;
+- никаких placeholders и «временных» значений;
+- при необходимости таблицы создаются с префиксом `mod_xxx_`.
+
+Пример: [`2026_11_28_62_world_prayer_circle_proc.sql`](sql/updates/world/master/2026_11_28_62_world_prayer_circle_proc.sql).
+
+---
+
+## Локализация
+
+Порядок проверки перед добавлением текста:
+
+1. Уже существует ли подходящий `BroadcastTextId` в клиенте? Если да — используем его.
+2. Есть ли готовая строка в `*_locale` для нужного языка? Не дублируем.
+3. Базовая локаль — **enUS**; затем добавляем `ruRU`.
+4. Для квестов/объектов проверяем `QuestV2.db2`, `BroadcastText.db2`, `Creature.db2`, `GameObject.db2` и соответствующие `*_locale` в живой БД.
+
+Если правка не добавляет новых строк (только ID/флаги/условия), локализация не требуется — это прямо указывается в `VERIFY`.
+
+---
+
+## Как добавить контент
+
+1. **Проверить источник.** Код/issue/PR должен быть полным и Blizzlike; исключаются боты, GM-команды, разблокировки, полёт везде, кастом-хаки и платежи.
+2. **Сверить с клиентом.** ID и константы ищутся в распарсенных CSV клиента `12.1.5.70077`.
+3. **Проверить HEAD.** `git grep` по текущей ветке: если файл/скрипт уже есть — не дублируем.
+4. **Положить код в `Custom`.** Например, `src/server/scripts/Custom/<Folder>/my_feature.cpp`.
+5. **Зарегистрировать функцию** в `src/server/scripts/Custom/custom_script_loader.cpp`:
+   ```cpp
+   void AddSC_my_feature();  // Custom/<Folder>/my_feature.cpp
+   ...
+   AddSC_my_feature();
+   ```
+6. **Подготовить `_62` SQL** по правилам выше и проверить его валидатором.
+7. **Переконфигурировать и пересобрать** (обязательно для нового `.cpp`).
+8. **Применить SQL на тестовой БД**, выполнить `VERIFY`-запросы.
+9. **Только после этого** коммитить в `new-content` без push.
+
+---
+
+## Проверка перед коммитом
+
+- [ ] `git grep` подтверждает, что в `master` нет дубля.
+- [ ] Все ID подтверждены клиентскими DB2 `12.1.5.70077`.
+- [ ] SQL валиден, idempotent, имеет `VERIFY` сверху и снизу.
+- [ ] Локализация либо добавлена, либо обоснованно не нужна.
+- [ ] Новый `.cpp` добавлен в `custom_script_loader.cpp`.
+- [ ] Выполнен повторный `cmake` и полная сборка.
+- [ ] SQL применён к живой/тестовой БД, `VERIFY` совпал.
+- [ ] Нет правок `ScriptLoader.cpp`, `src/server/game/**` и апстрим-скриптов.
+- [ ] Коммит создан локально; push не выполняется без согласия.
+
+---
+
+## Известные ограничения
+
+- Полноценный runtime-запуск `worldserver.exe` сейчас блокируется отсутствующими map/vmap файлами:
+  `Map file './maps/0000_43_31.map' does not exist!` → `Unable to load map and vmap data for starting zones - server shutting down!`
+- `Scene.db2` отсутствует локально и не найден в публичных источниках (Wago отдаёт `HTTP 400`, WowDB — Cloudflare `403`), поэтому сценарии, жёстко зависящие от него, отложены.
+- Парсер DB2 успешно разбирает `1127` таблиц; единственный известный сбой — `ExteriorComponentGroup` (`DBD data fields=2, DB2 fields=3`).
+- Сборка требует полного `reconfigure` после добавления нового `.cpp` — обычный `cmake --build` может не увидеть файл.
+
+---
+
+## Источники и ссылки
+
+- [TrinityCore master](https://github.com/TrinityCore/TrinityCore)
+- [Dragonflight_Dekk-Core](https://github.com/KamiliaBlow/Dragonflight_Dekk-Core)
+- [aquadeus/TrinityCore](https://github.com/aquadeus/TrinityCore)
+- [Чат Lolka](https://lolka.gg/8snOouNIX)
+- [TrinityCore Wiki](https://www.trinitycore.info)
+- [TrinityCore Forums](https://talk.trinitycore.org/)
+
+---
+
+## Лицензия
+
+Код TrinityCore распространяется по лицензии **GPL 2.0**. Полный текст — в [COPYING](COPYING). Файл `doc/GPL-2.0.txt` дублирует лицензию для удобства.
+
+Авторы и участники — в [AUTHORS](AUTHORS). Правила участия в upstream-разработке — в [CONTRIBUTING.md](CONTRIBUTING.md).
