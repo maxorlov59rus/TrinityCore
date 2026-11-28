@@ -17,6 +17,15 @@
 
 // This is where scripts' loading functions should be declared:
 
+// World bosses
+void AddSC_boss_apocron();              // WorldBosses/boss_apocron.cpp
+void AddSC_boss_brutallus_legion();     // WorldBosses/boss_brutallus_legion.cpp
+void AddSC_boss_calamir();              // WorldBosses/boss_calamir.cpp
+void AddSC_boss_drugon_the_frostblood();// WorldBosses/boss_drugon_the_frostblood.cpp
+void AddSC_boss_flotsam();              // WorldBosses/boss_flotsam.cpp
+void AddSC_boss_humongris();            // WorldBosses/boss_humongris.cpp
+void AddSC_boss_malificus();            // WorldBosses/boss_malificus.cpp
+
 void AddSC_zone_dalaran_broken_isle();
 void AddSC_zone_mardum();
 
@@ -48,6 +57,15 @@ void AddSC_orderhall_rogue();
 // void Add${NameOfDirectory}Scripts()
 void AddBrokenIslesScripts()
 {
+    // World bosses
+    AddSC_boss_apocron();
+    AddSC_boss_brutallus_legion();
+    AddSC_boss_calamir();
+    AddSC_boss_drugon_the_frostblood();
+    AddSC_boss_flotsam();
+    AddSC_boss_humongris();
+    AddSC_boss_malificus();
+
     AddSC_zone_dalaran_broken_isle();
     AddSC_zone_mardum();
 
