@@ -25,8 +25,12 @@ void AddSC_boss_calamir();              // WorldBosses/boss_calamir.cpp
 void AddSC_boss_drugon_the_frostblood();// WorldBosses/boss_drugon_the_frostblood.cpp
 void AddSC_boss_flotsam();              // WorldBosses/boss_flotsam.cpp
 void AddSC_boss_humongris();            // WorldBosses/boss_humongris.cpp
+void AddSC_boss_levantus();             // WorldBosses/boss_levantus.cpp
 void AddSC_boss_malificus();            // WorldBosses/boss_malificus.cpp
 void AddSC_boss_nazak_the_fiend();      // WorldBosses/boss_nazak_the_fiend.cpp
+void AddSC_boss_nithogg();              // WorldBosses/boss_nithogg.cpp
+void AddSC_boss_sharthos();             // WorldBosses/boss_sharthos.cpp
+void AddSC_boss_the_soultakers();       // WorldBosses/boss_the_soultakers.cpp
 void AddSC_boss_withered_jim();         // WorldBosses/boss_withered_jim.cpp
 
 void AddSC_zone_dalaran_broken_isle();
@@ -68,8 +72,12 @@ void AddBrokenIslesScripts()
     AddSC_boss_drugon_the_frostblood();
     AddSC_boss_flotsam();
     AddSC_boss_humongris();
+    AddSC_boss_levantus();
     AddSC_boss_malificus();
     AddSC_boss_nazak_the_fiend();
+    AddSC_boss_nithogg();
+    AddSC_boss_sharthos();
+    AddSC_boss_the_soultakers();
     AddSC_boss_withered_jim();
 
     AddSC_zone_dalaran_broken_isle();
