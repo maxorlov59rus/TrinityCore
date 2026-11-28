@@ -88,7 +88,7 @@ $ProjectId = $project.id
 $readme = @"
 # new-content
 
-Проверенный Blizzlike-контент для TrinityCore `master`, клиент **12.1.5.70077**.
+Проверенный Blizzlike-контент для TrinityCore `master`, клиент **12.1.5.70961**.
 
 ## Разделы
 
@@ -109,7 +109,7 @@ Write-Host '==> Updating project description...'
 Invoke-GraphQL -Query 'mutation($input:UpdateProjectV2Input!){ updateProjectV2(input:$input){ projectV2{ id url } } }' `
     -Variables @{ input = @{
         projectId       = $ProjectId
-        shortDescription = 'Blizzlike-контент для TrinityCore 12.1.5.70077'
+        shortDescription = 'Blizzlike-контент для TrinityCore 12.1.5.70961'
         readme          = $readme
     } } | Out-Null
 

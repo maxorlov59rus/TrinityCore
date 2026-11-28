@@ -2,7 +2,7 @@
 -- В этом файле три скрипта: boss_ana_mouz.cpp, boss_nazak_the_fiend.cpp, boss_withered_jim.cpp.
 -- Остальные четыре (levantus, nithogg, sharthos, the_soultakers) адаптированы локально и вынесены
 -- в 2026_11_28_62_world_legion_four_remaining_bosses.sql (биндинги и спавны).
--- ID спеллов и entry сверены с клиентом 12.1.5.70077 (SpellName.csv) и живой БД; конфликтующих привязок нет.
+-- ID спеллов и entry сверены с клиентом 12.1.5.70961 (SpellName.csv) и живой БД; конфликтующих привязок нет.
 -- Локализация не требуется: новые BroadcastText, creature_text и *_locale не добавляются.
 -- Спавн Withered J'im взят из точной строки creature.sql DekkCore (map 1220, zone 7334, area 8147,
 -- x=-1769.23, y=6364.26, z=57.5588, orientation=6.22849, spawntimesecs=300).

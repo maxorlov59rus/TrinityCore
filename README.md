@@ -1,10 +1,10 @@
 # TrinityCore · `new-content`
 
 [![License: GPL v2](https://img.shields.io/badge/license-GPL--2.0-blue.svg)](COPYING)
-![Client](https://img.shields.io/badge/client-12.1.5.70077-green.svg)
+![Client](https://img.shields.io/badge/client-12.1.5.70961-green.svg)
 ![Branch](https://img.shields.io/badge/branch-new--content-purple.svg)
 
-> Рабочая ветка на базе TrinityCore `master`. Цель — добавлять только **проверенный Blizzlike-контент** для retail-клиента `12.1.5.70077`, не ломая то, что уже работает в апстриме.
+> Рабочая ветка на базе TrinityCore `master`. Цель — добавлять только **проверенный Blizzlike-контент** для retail-клиента `12.1.5.70961`, не ломая то, что уже работает в апстриме.
 
 ---
 
@@ -50,7 +50,7 @@
 - официальный [TrinityCore `master`](https://github.com/TrinityCore/TrinityCore) и его открытые issue/PR;
 - [Dragonflight_Dekk-Core](https://github.com/KamiliaBlow/Dragonflight_Dekk-Core), каталоги `DekkCore/Scenarios` и `DekkCore/Legion`;
 - [aquadeus/TrinityCore](https://github.com/aquadeus/TrinityCore) — отдельные проверенные ветки с исправлениями квестов;
-- локальный репарс клиентских **DB2 → CSV** для сборки `12.1.5.70077`.
+- локальный репарс клиентских **DB2 → CSV** для сборки `12.1.5.70961`.
 
 Всё, что нельзя подтвердить клиентом или кодом, в ветку не попадает.
 
@@ -61,7 +61,7 @@
 1. **Не ломать работающее.** Приоритет — совместимость с текущим `master`; правки в общие файлы скриптов сводятся к минимуму.
 2. **Только `Custom` + SQL.** Новый C++-код живёт в `src/server/scripts/Custom/**` и подключается через `custom_script_loader.cpp`. Файлы `src/server/scripts/**` из `master` и `src/server/game/**` не редактируются.
 3. **Никаких ручных правок `ScriptLoader.cpp`.** Он генерируется системой сборки.
-4. **Данные из клиента.** ID спеллов, квестов, NPC, сценариев и констант сверяются с DB2 `12.1.5.70077`; выдуманные значения запрещены.
+4. **Данные из клиента.** ID спеллов, квестов, NPC, сценариев и констант сверяются с DB2 `12.1.5.70961`; выдуманные значения запрещены.
 5. **Idempotent SQL.** Каждый файл можно применять повторно: `DELETE` только своих строк, затем `INSERT`.
 6. **Локализация.** Новые строки обязаны иметь базу `enUS` и русский перевод; перед созданием новых строк проверяются `BroadcastTextId` и уже существующие `*_locale`.
 7. **Локальные коммиты.** Изменения фиксируются в `new-content`; push выполняется только после явного согласия.
@@ -94,7 +94,7 @@
 - **Сборка:** CMake ≥ 3.20, Ninja.
 - **Зависимости:** Boost, OpenSSL, MySQL 8.4 client library. На текущей машине используются `C:\libs\boost` и `C:\libs\openssl`.
 - **Сервер БД:** MySQL / MariaDB с поддержкой schema из `sql/base`.
-- **Клиент:** `World of Warcraft 12.1.5.70077` (именно под него сверяются DB2).
+- **Клиент:** `World of Warcraft 12.1.5.70961` (именно под него сверяются DB2).
 
 ---
 
@@ -165,7 +165,7 @@ mysql --protocol=TCP -h 127.0.0.1 -P 3306 -u <user> -p -D world -e "SOURCE C:/pa
 ## Как добавить контент
 
 1. **Проверить источник.** Код/issue/PR должен быть полным и Blizzlike; исключаются боты, GM-команды, разблокировки, полёт везде, кастом-хаки и платежи.
-2. **Сверить с клиентом.** ID и константы ищутся в распарсенных CSV клиента `12.1.5.70077`.
+2. **Сверить с клиентом.** ID и константы ищутся в распарсенных CSV клиента `12.1.5.70961`.
 3. **Проверить HEAD.** `git grep` по текущей ветке: если файл/скрипт уже есть — не дублируем.
 4. **Положить код в `Custom`.** Например, `src/server/scripts/Custom/<Folder>/my_feature.cpp`.
 5. **Зарегистрировать функцию** в `src/server/scripts/Custom/custom_script_loader.cpp`:
@@ -184,7 +184,7 @@ mysql --protocol=TCP -h 127.0.0.1 -P 3306 -u <user> -p -D world -e "SOURCE C:/pa
 ## Проверка перед коммитом
 
 - [ ] `git grep` подтверждает, что в `master` нет дубля.
-- [ ] Все ID подтверждены клиентскими DB2 `12.1.5.70077`.
+- [ ] Все ID подтверждены клиентскими DB2 `12.1.5.70961`.
 - [ ] SQL валиден, idempotent, имеет `VERIFY` сверху и снизу.
 - [ ] Локализация либо добавлена, либо обоснованно не нужна.
 - [ ] Новый `.cpp` добавлен в `custom_script_loader.cpp`.

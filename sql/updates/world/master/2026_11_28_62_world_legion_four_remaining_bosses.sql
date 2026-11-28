@@ -1,6 +1,6 @@
 -- VERIFY: четыре оставшихся босса из DekkCore/Legion/WorldBosses портированы в module BrokenIsles.
 -- ScriptName и spell-биндинги сверены с DekkCore sql/base/world/creature_template.sql
--- и sql/base/world/spell_script_names.sql; entry/spell ID сверены с живой БД world и клиентским SpellName.csv (build 12.1.5.70077).
+-- и sql/base/world/spell_script_names.sql; entry/spell ID сверены с живой БД world и клиентским SpellName.csv (build 12.1.5.70961).
 -- Конфликтующих привязок в живой БД нет. AT 7053 и 7411 не привязываются: отсутствуют в клиентском AreaTrigger.csv и в живой БД.
 --
 -- Источники координат (не вычислены и не выдуманы):

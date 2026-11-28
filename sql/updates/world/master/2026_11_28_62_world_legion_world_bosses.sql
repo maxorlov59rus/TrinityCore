@@ -2,7 +2,7 @@
 -- в штатный модуль BrokenIsles (регистрация в broken_isles_script_loader.cpp, без правки генерируемого ScriptLoader.cpp).
 -- Источник скриптов: src/server/scripts/DekkCore/Legion/WorldBosses/.
 -- Источник привязок: dekk/main -> base/world/spell_script_names.sql и base/world/creature_template.sql.
--- Сверено с клиентом 12.1.5.70077: SpellName.csv содержит все 14 перечисленных ID заклинаний.
+-- Сверено с клиентом 12.1.5.70961: SpellName.csv содержит все 14 перечисленных ID заклинаний.
 -- В живой БД entry 99929, 108879, 109331, 109456, 110378, 112128, 117239, 117303, 121124 существуют,
 -- но ScriptName пуст; конфликтующих привязок нет.
 -- Локализация не требуется: новые BroadcastText, creature_text и *_locale не добавляются.

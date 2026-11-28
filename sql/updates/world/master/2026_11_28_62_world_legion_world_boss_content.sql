@@ -2,7 +2,7 @@
 -- Источники: полная БД LegionCore 7.3.5V2 (creature_loot_template, creature_text,
 -- creature_template_spell, creature_template_addon) и полная БД WarAxe_Legion 7.3.5.
 -- Таблицы loot LegionCore и WarAxe для целевых entry совпадают построчно; все положительные
--- Item.rst проверены по клиентским Item.csv и ItemSparse.csv сборки 12.1.5.70077.
+-- Item.rst проверены по клиентским Item.csv и ItemSparse.csv сборки 12.1.5.70961.
 --
 -- Преобразования в схему текущего ядра:
 --   LegionCore.ChanceOrQuestChance < 0 -> QuestRequired=1, Chance=abs(значения);

@@ -22,7 +22,7 @@
  * where the AI lived in EasternKingdoms/zone_dun_morogh.cpp. It is kept in
  * Custom/DunMorogh instead so no files shipped by master have to be edited.
  *
- * Verified against client 12.1.5.70077: QuestV2.db2 has quest 25839 and
+ * Verified against client 12.1.5.70961: QuestV2.db2 has quest 25839 and
  * SpellName.db2 has 50630, 77424, 77431 and 96003. The old spellclick on
  * NPC 41327 used 59099, which the client calls "Destroy Platform".
  *

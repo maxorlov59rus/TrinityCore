@@ -1,4 +1,4 @@
--- VERIFY: талант «Молитвенный круг» (Prayer Circle, SpellID 321377) для Holy-жреца в билде 12.1.5.70077.
+-- VERIFY: талант «Молитвенный круг» (Prayer Circle, SpellID 321377) для Holy-жреца в билде 12.1.5.70961.
 -- Источник: https://github.com/TrinityCore/TrinityCore/issues/29039 — исходный SQL от 2023 года устарел
 -- (сам автор пометил его как требующий проверки); https://github.com/TrinityCore/TrinityCore/issues/31424 —
 -- исправленная версия, но закрыта с пометкой «no longer valid in 12.0.1». Ниже значения сверены с клиентскими
