@@ -78,8 +78,9 @@
 | 2026-11-28 | `…_world_earthen_intro_chain.sql` | Вводная цепочка Earthen: `79200 → 83328`, `83328 ← 79200`, проверено на живой БД. |
 | 2026-11-28 | `…_world_prayer_circle_proc.sql` | «Молитвенный круг» (`321377`): восстановлено ограничение проков на Holy Word: Sanctify по данным `Talent.db2` и `SpellClassOptions.db2`. |
 | 2026-11-28 | `src/server/scripts/Custom/DunMorogh/npc_ultrasafe_personnel_launcher.cpp`, `…_quest_25839_launcher.sql` | Квест `25839` «The Ultrasafe Personnel Launcher»: spellclick `77424` вместо `59099`, AI катапульты в `Custom`. |
+| 2026-11-28 | `src/server/scripts/BrokenIsles/WorldBosses/`, `…_world_legion_world_bosses.sql`, `…_world_legion_world_boss_spawns.sql` | Мировые боссы Расколотых островов: 7 скриптов из `DekkCore/Legion/WorldBosses`, привязки 14 спеллов и 9 `ScriptName`, спавны на `map 1220` с координатами из клиентских DB2/`.map`. |
 
-В работе: выборочный перенос подтверждённого контента из `DekkCore/Scenarios` и `DekkCore/Legion`.
+В работе: выборочный перенос подтверждённого контента из `DekkCore/Scenarios` и `DekkCore/Legion`. Остальные семь мировых боссов (`Ana-Mouz`, `Levantus`, `Na'zak the Fiend`, `Nithogg`, `Shar'thos`, `The Soultakers`, `Withered J'im`) проходят проверку ID и координат перед портом.
 
 ---
 
