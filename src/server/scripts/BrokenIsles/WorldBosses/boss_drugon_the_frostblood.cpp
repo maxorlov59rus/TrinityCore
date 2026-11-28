@@ -111,12 +111,7 @@ public:
                 case 1:
                     if (Unit* target = SelectTarget(SelectTargetMethod::Random))
                         me->CastSpell(target, 219803, true);
-                    me->SetUnitFlag(UnitFlags(UNIT_FLAG_REMOVE_CLIENT_CONTROL));
-                    _events.ScheduleEvent(2, 2s);
                     _events.ScheduleEvent(1, 7s);
-                    break;
-                case 2:
-                    me->RemoveUnitFlag(UnitFlags(UNIT_FLAG_REMOVE_CLIENT_CONTROL));
                     break;
                 case 3:
                     DoCast(219493);
